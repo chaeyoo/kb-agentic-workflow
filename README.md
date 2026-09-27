@@ -46,6 +46,28 @@ claude mcp add --transport http kb-policy http://localhost:8788/mcp \
 
 `dev-read-token` 은 읽기 전용 토큰이라 조회 도구만 보입니다. 자세한 내용은 `docs/02-mcp.md` (작성 예정).
 
+## 키 없이 / 오프라인으로 시연하기
+
+```bash
+pnpm seed:reset
+LLM_MODE=replay pnpm dev     # fixtures/runs 의 녹화된 모델 응답을 재생 (도구는 실제로 실행)
+```
+
+`fixtures/runs` 의 기본 4개는 스크립트로 만든 샘플이다. 발표 전에 실제 키로 다시 녹화한다 → [docs/04](docs/04-observability.md).
+
+## 배포
+
+`render.yaml` (Render Blueprint): Web Service 2개, DB 없음. 환경변수는 키만 정의돼 있다 → [docs/06](docs/06-try-it.md#render-배포).
+
 ## 문서
 
-- `docs/05-build-log.md` — 만들어가는 순서와 결정 기록
+| 문서 | 내용 |
+|---|---|
+| [00-overview](docs/00-overview.md) | 아키텍처, 두 서버의 역할, 데이터 흐름 |
+| [01-agent-loop](docs/01-agent-loop.md) | 에이전트 루프 한 줄씩 — 프레임워크 없이 이게 전부 |
+| [02-mcp](docs/02-mcp.md) | MCP, 도구 설계와 description 요령, Claude Code / Cursor 연결 |
+| [03-hitl](docs/03-hitl.md) | 사람이 개입하는 지점과 승인 정책 |
+| [04-observability](docs/04-observability.md) | 이벤트 스트림, AgentRun, /internals, 리플레이 |
+| [05-build-log](docs/05-build-log.md) | 만들어가는 순서와 결정 기록 (커밋 단위) |
+| [06-try-it](docs/06-try-it.md) | 5분 셋업, 도구 추가 실습, Render 배포 |
+| [07-demo-rehearsal](docs/07-demo-rehearsal.md) | 발표 시연 순서, 체크리스트, 장애 대응 |

@@ -21,6 +21,12 @@ import type { ToolDef } from "./tools/types.ts";
 
 export const allTools: ToolDef[] = [...policyTools, ...boardTools];
 
+// 시작할 때 모든 도구에 모든 버전의 description 이 있는지 확인한다 (빠뜨리면 바로 알 수 있게)
+for (const [version, texts] of Object.entries(descriptionVersions)) {
+  const missing = allTools.filter((t) => !texts[t.name]).map((t) => t.name);
+  if (missing.length) throw new Error(`descriptions/${version}.ts 에 description 이 없습니다: ${missing.join(", ")}`);
+}
+
 function buildServer(caller: Caller): McpServer {
   const server = new McpServer(
     { name: "kb-policy", version: "0.1.0" },
