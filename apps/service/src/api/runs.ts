@@ -40,7 +40,11 @@ export function runRoutes(store: FileStore, runner: AgentRunner) {
   });
 
   app.get("/runs", (c) =>
-    c.json([...store.data.runs].reverse().slice(0, 50).map(({ events, ...r }) => ({ ...r, eventCount: events.length }))));
+    c.json([...store.data.runs].reverse().slice(0, 50).map(({ events, ...r }) => ({
+      ...r,
+      eventCount: events.length,
+      toolCalls: events.filter((e) => e.type === "tool_call").map((e) => (e.type === "tool_call" ? e.name : "")),
+    }))));
 
   app.get("/runs/:id", (c) => {
     const run = store.data.runs.find((r) => r.id === c.req.param("id"));

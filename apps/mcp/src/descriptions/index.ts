@@ -2,6 +2,7 @@ import { v1 } from "./v1.ts";
 import { v2 } from "./v2.ts";
 
 const versions = { v1, v2 } as const;
+export const descriptionVersions = versions;
 export type DescriptionVersion = keyof typeof versions;
 
 export const descriptionVersion: DescriptionVersion =

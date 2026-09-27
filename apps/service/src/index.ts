@@ -10,6 +10,7 @@ import { BoardService, FileStore, PolicyService, ProposalService } from "@kb/cor
 import { AgentRunner } from "./agent/runner.ts";
 import { boardRoutes } from "./api/board.ts";
 import { policyRoutes } from "./api/policies.ts";
+import { internalsRoutes } from "./api/internals.ts";
 import { proposalRoutes } from "./api/proposals.ts";
 import { runRoutes } from "./api/runs.ts";
 
@@ -26,6 +27,7 @@ app.route("/api", policyRoutes(policies));
 app.route("/api", runRoutes(store, runner));
 app.route("/api", boardRoutes(store, board, runner));
 app.route("/api", proposalRoutes(proposals, board, runner));
+app.route("/api", internalsRoutes(store));
 app.post("/api/admin/reset", (c) => { store.reset(); return c.json({ ok: true }); });
 
 // 운영: apps/web 빌드 결과를 같은 서버에서 서빙한다. (개발 중에는 vite dev server 가 5173 에서 뜬다)

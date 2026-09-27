@@ -12,7 +12,7 @@ import { logger } from "hono/logger";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { authenticate, canUse, type Caller } from "./auth.ts";
-import { describe, descriptionVersion } from "./descriptions/index.ts";
+import { describe, descriptionVersion, descriptionVersions } from "./descriptions/index.ts";
 import { registerResources } from "./resources.ts";
 import { ServiceError } from "./serviceClient.ts";
 import { boardTools } from "./tools/board.ts";
@@ -52,6 +52,16 @@ function buildServer(caller: Caller): McpServer {
 const app = new Hono();
 app.use("*", logger());
 app.get("/health", (c) => c.json({ ok: true, descriptions: descriptionVersion }));
+
+// /internals 페이지용: description 버전별 원문과 도구별 권한/승인 설정 (토큰 필요)
+app.get("/descriptions", (c) => {
+  if (!authenticate(c.req.header("authorization"))) return c.json({ error: "unauthorized" }, 401);
+  return c.json({
+    current: descriptionVersion,
+    versions: descriptionVersions,
+    tools: allTools.map((t) => ({ name: t.name, scope: t.scope, requiresApproval: t.requiresApproval, readOnly: t.readOnly })),
+  });
+});
 
 app.all("/mcp", async (c) => {
   const auth = authenticate(c.req.header("authorization"));
