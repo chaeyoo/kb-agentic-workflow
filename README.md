@@ -6,8 +6,9 @@
 > 모든 정책 문서는 가상의 헬스케어 앱을 위해 지어낸 데이터입니다. 실제 회사 정책이 아닙니다.
 
 ```
-apps/service   REST API + 에이전트 루프 + (웹 UI)      :8787
-apps/mcp       원격 MCP 서버 (Streamable HTTP, Bearer) :8788
+apps/service   REST API + 에이전트 루프 (+ 운영에서 웹 UI 서빙) :8787
+apps/mcp       원격 MCP 서버 (Streamable HTTP, Bearer)      :8788
+apps/web       웹 UI (React + Vite, 개발 중 dev server)       :5173
 packages/core  도메인 모델, 파일 저장소, 검색, 시드
 docs/          팀 설명용 문서
 ```
@@ -17,12 +18,17 @@ docs/          팀 설명용 문서
 ```bash
 pnpm install
 cp .env.example .env        # ANTHROPIC_API_KEY 만 채운다
-pnpm dev                    # service + mcp 동시 기동
+pnpm dev                    # service + mcp + web 동시 기동 → http://localhost:5173
 
 # 다른 터미널에서
 pnpm ask "만 14세 미만 사용자는 검진 예약을 스스로 할 수 있나요?"
 pnpm ask --verbose "..."    # 도구 결과 원문까지 출력
 ```
+
+### 데모 시나리오
+
+1. **Q&A** — "만 14세 미만 사용자는 검진 예약을 스스로 할 수 있나요?" → 문서 간 모순을 찾아 인용과 함께 답하고, 정책 공백 티켓을 만든다.
+2. **보드** — T-4(보호자용 자녀 결과 열람 화면)의 담당자를 🤖 Agent 로 바꾼다 → 에이전트가 정책을 조사해 코멘트를 남기고, 모순을 별도 티켓으로 올린 뒤 In Review 로 옮긴다.
 
 상태는 `data/store.json` 파일 하나에 저장됩니다 (DB 없음). 시드로 되돌리려면 서버를 끄고 `pnpm seed:reset`.
 
