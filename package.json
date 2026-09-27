@@ -1,0 +1,20 @@
+{
+  "name": "kb-agentic-workflow",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "start:service": "pnpm --filter @kb/service start",
+    "start:mcp": "pnpm --filter @kb/mcp start",
+    "ask": "pnpm --filter @kb/service ask",
+    "seed:reset": "pnpm --filter @kb/core seed:reset",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}

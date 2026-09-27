@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.local
+# 런타임 상태 (파일 기반 저장소). 시드는 packages/core/src/seed 에 있다.
+data/
+*.log
+.DS_Store
