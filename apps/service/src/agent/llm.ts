@@ -3,8 +3,12 @@
 // - 일시적 오류(429, 5xx, 네트워크)는 여기서 재시도하고, 재시도 사실을 이벤트로 알린다
 //   (SDK 내장 재시도를 끄고 직접 하는 이유: 타임라인에 "재시도"가 보이게 하려고)
 import Anthropic from "@anthropic-ai/sdk";
+import { claimFixture, replayTurn, type Fixture } from "./replay.ts";
 
 export const MODEL = process.env.LLM_MODEL || "claude-sonnet-5";
+/** live: Anthropic API 호출 / replay: 녹화된 응답 재생 (replay.ts) */
+export const LLM_MODE = process.env.LLM_MODE === "replay" ? "replay" : "live";
+export const MODEL_LABEL = LLM_MODE === "replay" ? `replay (${MODEL})` : MODEL;
 const EFFORT = (process.env.LLM_EFFORT || "medium") as "low" | "medium" | "high";
 const MAX_ATTEMPTS = 3;
 
@@ -33,8 +37,20 @@ function isRetryable(err: unknown): boolean {
     || err instanceof Anthropic.APIConnectionError;
 }
 
+const replaying = new WeakMap<Anthropic.MessageParam[], Fixture>();
+
 /** 모델에게 한 턴을 요청하고, 완성된 응답(Message)을 돌려준다. */
 export async function callModel(input: TurnInput, h: TurnHandlers): Promise<Anthropic.Message> {
+  if (LLM_MODE === "replay") {
+    // 같은 실행 동안 messages 배열은 같은 객체다 → 첫 턴에 고른 fixture 를 계속 쓴다
+    const first = input.messages[0]?.content;
+    if (!replaying.has(input.messages)) replaying.set(input.messages, claimFixture(typeof first === "string" ? first : ""));
+    const turnIndex = input.messages.filter((m) => m.role === "assistant").length;
+    return replayTurn(replaying.get(input.messages)!, turnIndex, h);
+  }
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) {
+    throw new Error("ANTHROPIC_API_KEY 가 없습니다. .env 에 설정하거나, 녹화된 실행으로 시연하려면 LLM_MODE=replay 로 실행하세요.");
+  }
   for (let attempt = 1; ; attempt++) {
     try {
       const stream = getClient().messages.stream({

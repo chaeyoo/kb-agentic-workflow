@@ -7,7 +7,7 @@ import { EventEmitter } from "node:events";
 import type { AgentEvent, AgentRun, Citation, FileStore, QaSession, RecordedEvent } from "@kb/core";
 import { runAgentLoop } from "./loop.ts";
 import { connectToolbox } from "./mcpClient.ts";
-import { MODEL } from "./llm.ts";
+import { MODEL_LABEL } from "./llm.ts";
 import { SYSTEM_PROMPT, ticketTaskPrompt } from "./systemPrompt.ts";
 
 export type RunListener = (event: RecordedEvent) => void;
@@ -23,7 +23,7 @@ export class AgentRunner {
       id: this.store.nextId("run"),
       trigger,
       input,
-      model: MODEL,
+      model: MODEL_LABEL,
       toolDescriptionVersion: process.env.TOOL_DESCRIPTIONS || "v2",
       events: [],
       status: "running",

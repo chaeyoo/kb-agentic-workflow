@@ -8,6 +8,8 @@ import { Hono } from "hono";
 import { streamSSE, type SSEStreamingApi } from "hono/streaming";
 import type { FileStore, RecordedEvent } from "@kb/core";
 import type { AgentRunner } from "../agent/runner.ts";
+import { LLM_MODE } from "../agent/llm.ts";
+import { listFixtures, saveFixture } from "../agent/replay.ts";
 
 function pipeRun(stream: SSEStreamingApi, runner: AgentRunner, runId: string) {
   return new Promise<void>((resolve) => {
@@ -52,6 +54,20 @@ export function runRoutes(store: FileStore, runner: AgentRunner) {
   });
 
   app.get("/runs/:id/stream", (c) => streamSSE(c, (stream) => pipeRun(stream, runner, c.req.param("id"))));
+
+  // 리플레이용 fixture: 잘 나온 실행을 fixtures/runs/ 에 저장해 두면 LLM_MODE=replay 에서 재생된다.
+  app.post("/runs/:id/fixture", async (c) => {
+    const run = store.data.runs.find((r) => r.id === c.req.param("id"));
+    if (!run) return c.json({ error: "실행 기록이 없습니다" }, 404);
+    if (run.status !== "completed") return c.json({ error: "완료된 실행만 저장할 수 있습니다" }, 400);
+    const { name } = await c.req.json<{ name?: string }>().catch(() => ({ name: undefined }));
+    return c.json({ file: saveFixture(run, name || run.id) }, 201);
+  });
+
+  app.get("/fixtures", (c) => c.json({
+    mode: LLM_MODE,
+    fixtures: listFixtures().map(({ events, ...f }) => ({ ...f, eventCount: events.length })),
+  }));
 
   app.get("/qa", (c) => c.json([...store.data.qaSessions].reverse()));
   app.get("/qa/by-run/:runId", (c) => {
