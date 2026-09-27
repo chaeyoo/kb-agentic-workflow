@@ -11,6 +11,7 @@ export interface Caller {
   token: string;
   scope: Scope;
   label: string; // 로그/코멘트에 남길 호출자 이름
+  runId?: string; // 우리 에이전트가 보낸 X-Agent-Run-Id (어느 실행에서 온 호출인가)
 }
 
 function parseTokens(): Map<string, Caller> {

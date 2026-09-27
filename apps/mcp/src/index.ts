@@ -15,10 +15,11 @@ import { authenticate, canUse, type Caller } from "./auth.ts";
 import { describe, descriptionVersion } from "./descriptions/index.ts";
 import { registerResources } from "./resources.ts";
 import { ServiceError } from "./serviceClient.ts";
+import { boardTools } from "./tools/board.ts";
 import { policyTools } from "./tools/policy.ts";
 import type { ToolDef } from "./tools/types.ts";
 
-export const allTools: ToolDef[] = [...policyTools];
+export const allTools: ToolDef[] = [...policyTools, ...boardTools];
 
 function buildServer(caller: Caller): McpServer {
   const server = new McpServer(
@@ -53,14 +54,15 @@ app.use("*", logger());
 app.get("/health", (c) => c.json({ ok: true, descriptions: descriptionVersion }));
 
 app.all("/mcp", async (c) => {
-  const caller = authenticate(c.req.header("authorization"));
-  if (!caller) {
+  const auth = authenticate(c.req.header("authorization"));
+  if (!auth) {
     return c.json(
       { jsonrpc: "2.0", error: { code: -32001, message: "유효한 Bearer 토큰이 필요합니다" }, id: null },
       401,
       { "WWW-Authenticate": 'Bearer realm="kb-policy-mcp"' },
     );
   }
+  const caller: Caller = { ...auth, runId: c.req.header("x-agent-run-id") };
   const server = buildServer(caller);
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: undefined, // stateless: 세션을 기억하지 않는다 (Render 재시작/확장에 안전)

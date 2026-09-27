@@ -5,4 +5,10 @@ export const v1: Record<string, string> = {
   search_policies: "정책을 검색합니다.",
   get_policy_document: "정책 문서를 가져옵니다.",
   get_policy_history: "정책 이력을 가져옵니다.",
+  list_open_questions: "질문 목록을 가져옵니다.",
+  get_ticket: "티켓을 가져옵니다.",
+  create_ticket: "티켓을 만듭니다.",
+  update_ticket_status: "티켓 상태를 바꿉니다.",
+  add_comment: "코멘트를 답니다.",
+  link_policy_section: "섹션을 연결합니다.",
 };
