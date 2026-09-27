@@ -33,7 +33,16 @@ export class FileStore {
   constructor(dataDir = process.env.DATA_DIR || join(repoRoot, "data")) {
     this.path = join(dataDir, "store.json");
     if (existsSync(this.path)) {
-      this.data = JSON.parse(readFileSync(this.path, "utf8")) as StoreData;
+      try {
+        this.data = JSON.parse(readFileSync(this.path, "utf8")) as StoreData;
+      } catch (err) {
+        // 파일이 깨졌으면 옆에 백업해 두고 시드로 다시 시작한다 (발표 중 서버가 안 뜨는 것보다 낫다)
+        const backup = `${this.path}.broken-${Date.now()}`;
+        renameSync(this.path, backup);
+        console.error(`[store] ${this.path} 을(를) 읽을 수 없어 ${backup} 로 옮기고 시드로 초기화합니다: ${(err as Error).message}`);
+        this.data = loadSeed();
+        this.save();
+      }
     } else {
       this.data = loadSeed();
       this.save();
