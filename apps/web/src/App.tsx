@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { api, getUser, setUser } from "./api.ts";
 import { useRoute } from "./hooks.ts";
 import { BoardPage } from "./pages/BoardPage.tsx";
+import { InternalsPage } from "./pages/InternalsPage.tsx";
 import { PoliciesPage } from "./pages/PoliciesPage.tsx";
 import { QaPage } from "./pages/QaPage.tsx";
 
@@ -11,7 +12,7 @@ export function App() {
   const [user, setUserState] = useState(getUser());
   useEffect(() => { api.get<{ name: string; role: string }[]>("/users").then(setUsers); }, []);
 
-  const nav = [["qa", "Q&A"], ["board", "보드"], ["policies", "정책서"]] as const;
+  const nav = [["qa", "Q&A"], ["board", "보드"], ["policies", "정책서"], ["internals", "Internals"]] as const;
   return (
     <div className="app">
       <header className="topbar">
@@ -28,6 +29,7 @@ export function App() {
         {page === "qa" && <QaPage runId={a} />}
         {page === "board" && <BoardPage ticketId={a} users={users} />}
         {page === "policies" && <PoliciesPage documentId={a} target={b} />}
+        {page === "internals" && <InternalsPage tab={a} id={b} />}
       </main>
     </div>
   );

@@ -71,7 +71,7 @@ export function QaPage({ runId }: { runId?: string }) {
           <div className="answer card">
             <div className="answer-head">
               <strong>답변</strong> {done ? <VerdictBadge answer={done.answer} /> : <span className="badge running">작업 중…</span>}
-              <span className="muted small">{runId}</span>
+              <a className="muted small" href={`#/internals/runs/${runId}`}>{runId}</a>
             </div>
             {answer ? <RichText text={answer} /> : <div className="muted">정책 문서를 찾는 중…</div>}
             {createdTicket && <div className="notice">🎫 에이전트가 정책 공백 티켓 <a href={`#/board/${createdTicket}`}>{createdTicket}</a> 을 만들어 담당자에게 확인을 요청했습니다.</div>}

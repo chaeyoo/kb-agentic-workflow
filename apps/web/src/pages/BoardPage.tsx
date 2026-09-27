@@ -4,6 +4,7 @@ import { api, assigneeLabel, type Assignee, type TicketDetail, type TicketSummar
 import { usePolling, useRunEvents } from "../hooks.ts";
 import { RichText, citationHref } from "../components/RichText.tsx";
 import { Timeline } from "../components/Timeline.tsx";
+import { ProposalCard } from "../components/ProposalCard.tsx";
 
 const COLUMNS = [
   { status: "todo", label: "To Do" },
@@ -94,6 +95,15 @@ function TicketPanel({ ticketId, users, onChange }: { ticketId: string; users: {
           ))}</ul>
         )}
       </section>
+
+      {d.proposals.length > 0 && (
+        <section>
+          <h3>정책 변경안</h3>
+          {[...d.proposals].reverse().map((p) => (
+            <ProposalCard key={p.id} proposal={p} onReviewed={() => { refresh(); onChange(); }} />
+          ))}
+        </section>
+      )}
 
       <section>
         <h3>코멘트</h3>

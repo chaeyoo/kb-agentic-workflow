@@ -1,7 +1,9 @@
 // service REST API 호출 + 에이전트 실행 이벤트 구독.
-import type { AgentRun, Assignee, Comment, PolicyDocument, PolicySection, QaSession, RecordedEvent, Ticket } from "@kb/core";
+import type {
+  AgentRun, Assignee, Comment, PolicyChangeProposal, PolicyDocument, PolicySection, QaSession, RecordedEvent, Ticket,
+} from "@kb/core";
 
-export type { AgentRun, Assignee, Comment, PolicyDocument, PolicySection, QaSession, RecordedEvent, Ticket };
+export type { AgentRun, Assignee, Comment, PolicyChangeProposal, PolicyDocument, PolicySection, QaSession, RecordedEvent, Ticket };
 
 let currentUser = localStorage.getItem("user") || "김하늘";
 export const getUser = () => currentUser;
@@ -31,6 +33,7 @@ export interface TicketDetail {
   comments: Comment[];
   sections: { key: string; heading?: string; version?: number; documentId?: string; documentTitle?: string }[];
   runs: { id: string; status: string; startedAt: string; durationMs?: number }[];
+  proposals: PolicyChangeProposal[];
   createdByRunId?: string;
   agentRunning: boolean;
 }
