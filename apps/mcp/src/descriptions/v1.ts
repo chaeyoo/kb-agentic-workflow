@@ -11,4 +11,6 @@ export const v1: Record<string, string> = {
   update_ticket_status: "티켓 상태를 바꿉니다.",
   add_comment: "코멘트를 답니다.",
   link_policy_section: "섹션을 연결합니다.",
+  propose_policy_change: "정책을 변경합니다.",
+  request_approval: "승인을 요청합니다.",
 };

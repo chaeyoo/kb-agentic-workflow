@@ -1,7 +1,7 @@
 // policy 도구: 정책 문서 검색/조회/이력.
 // 모든 도구는 JSON 을 돌려주고, 타임라인 표시용 한 줄 요약(summary)을 함께 넣는다.
 import { z } from "zod";
-import type { DocumentView, PolicyDocument, PolicySection, SearchHit } from "@kb/core";
+import type { DocumentView, PolicyChangeProposal, PolicyDocument, PolicySection, SearchHit } from "@kb/core";
 import { service } from "../serviceClient.ts";
 import { defineTool } from "./types.ts";
 
@@ -86,6 +86,33 @@ export const getPolicyHistory = defineTool({
   },
 });
 
+export const proposePolicyChange = defineTool({
+  name: "propose_policy_change",
+  title: "정책 변경안 제안",
+  scope: "propose",
+  requiresApproval: true, // 이 도구는 문서를 바꾸지 않는다. 사람이 승인해야 새 버전이 된다.
+  readOnly: false,
+  input: {
+    sectionKey: z.string().describe("바꿀 섹션 키. 예: 'membership.age'"),
+    baseVersion: z.number().int().describe("기준으로 삼은 현재 섹션 버전 (get_policy_document 로 확인한 값)"),
+    proposedBody: z.string().min(1).describe("변경 후 섹션 본문 '전체' (markdown). 바뀌지 않는 줄도 모두 포함"),
+    proposedHeading: z.string().optional().describe("제목을 바꿀 때만"),
+    rationale: z.string().min(10).describe("왜 바꾸는가. 누가 언제 어떤 결정을 했는지 (티켓 코멘트 인용)"),
+    sourceTicketId: z.string().describe("결정이 기록된 티켓 번호. 예: 'T-5'"),
+  },
+  async handler(args, caller) {
+    const p = await service.post<PolicyChangeProposal>("/proposals", args, caller);
+    const changed = p.diff.split("\n").filter((l) => l.startsWith("+") || l.startsWith("-")).length;
+    return {
+      summary: `${p.id} 제출 (${p.sectionKey} v${p.baseVersion}, 변경 ${changed}줄) — 승인 대기`,
+      proposalId: p.id,
+      status: p.status,
+      diff: p.diff,
+      next: "아직 정책서는 바뀌지 않았습니다. request_approval 로 티켓을 승인 대기 상태로 옮기세요.",
+    };
+  },
+});
+
 export const listDocuments = async () => service.get<(PolicyDocument & { sections: unknown[] })[]>("/policies");
 
-export const policyTools = [searchPolicies, getPolicyDocument, getPolicyHistory];
+export const policyTools = [searchPolicies, getPolicyDocument, getPolicyHistory, proposePolicyChange];

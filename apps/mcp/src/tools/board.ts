@@ -1,6 +1,6 @@
 // board 도구: 티켓 조회/생성/상태 변경/코멘트/정책 섹션 연결, 미해결 정책 공백 조회.
 import { z } from "zod";
-import type { Comment, Ticket } from "@kb/core";
+import type { Comment, PolicyChangeProposal, Ticket } from "@kb/core";
 import { service } from "../serviceClient.ts";
 import { defineTool } from "./types.ts";
 
@@ -8,6 +8,7 @@ type TicketDetail = {
   ticket: Ticket;
   comments: Comment[];
   sections: { key: string; heading?: string; version?: number; documentTitle?: string }[];
+  proposals: PolicyChangeProposal[];
 };
 
 const who = (a: Ticket["assignee"]) => (!a ? "미배정" : a.kind === "agent" ? "Agent" : a.name);
@@ -47,6 +48,10 @@ export const getTicket = defineTool({
       linkedSections: d.sections,
       comments: d.comments.map((c) => ({
         author: c.author.kind === "agent" ? "Agent" : c.author.name, body: c.body, createdAt: c.createdAt,
+      })),
+      proposals: d.proposals.map((p) => ({
+        proposalId: p.id, sectionKey: p.sectionKey, baseVersion: p.baseVersion, status: p.status,
+        reviewer: p.reviewer, reviewComment: p.reviewComment,
       })),
     };
   },
@@ -119,4 +124,26 @@ export const linkPolicySection = defineTool({
   },
 });
 
-export const boardTools = [listOpenQuestions, getTicket, createTicket, updateTicketStatus, addComment, linkPolicySection];
+export const requestApproval = defineTool({
+  name: "request_approval",
+  title: "승인 요청",
+  scope: "propose",
+  requiresApproval: true, // 이 도구 자체가 사람 개입(HITL) 지점이다
+  readOnly: false,
+  input: {
+    ticketId: z.string(),
+    proposalId: z.string().describe("propose_policy_change 가 돌려준 변경안 번호. 예: 'P-1'"),
+    message: z.string().min(1).describe("검토자에게: 무엇을 왜 바꿨는지 2~4줄 요약"),
+  },
+  async handler({ ticketId, proposalId, message }, caller) {
+    const r = await service.post<{ ticketId: string; status: string; proposalId: string }>(
+      `/tickets/${encodeURIComponent(ticketId)}/request-approval`, { proposalId, message }, caller);
+    return {
+      summary: `${r.ticketId} → needs_approval (${r.proposalId} 검토 대기)`,
+      ...r,
+      next: "사람의 검토를 기다립니다. 이번 작업은 여기서 마무리하고 최종 답변을 쓰세요. 승인 여부를 기다리거나 다시 확인하지 마세요.",
+    };
+  },
+});
+
+export const boardTools = [listOpenQuestions, getTicket, createTicket, updateTicketStatus, addComment, linkPolicySection, requestApproval];
