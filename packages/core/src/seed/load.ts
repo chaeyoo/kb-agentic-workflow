@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import type { PolicyDocument, PolicySection } from "../types.ts";
 import type { StoreData } from "../store.ts";
 import { seedHistory, seedCurrentChangeReasons } from "./history.ts";
+import { seedComments, seedTickets } from "./board.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SEED_BASE_TIME = "2026-03-02T09:00:00.000Z";
@@ -75,7 +76,12 @@ export function loadSeed(): StoreData {
     });
   }
 
-  return { documents, sections, proposals: [], tickets: [], comments: [], runs: [], qaSessions: [], counters: {} };
+  return {
+    documents, sections, proposals: [],
+    tickets: structuredClone(seedTickets), comments: structuredClone(seedComments),
+    runs: [], qaSessions: [],
+    counters: { T: seedTickets.length, C: seedComments.length },
+  };
 }
 
 export function loadResource(name: "glossary" | "writing-rules"): string {

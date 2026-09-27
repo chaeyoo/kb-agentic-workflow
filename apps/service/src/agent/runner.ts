@@ -8,7 +8,7 @@ import type { AgentEvent, AgentRun, Citation, FileStore, QaSession, RecordedEven
 import { runAgentLoop } from "./loop.ts";
 import { connectToolbox } from "./mcpClient.ts";
 import { MODEL } from "./llm.ts";
-import { SYSTEM_PROMPT } from "./systemPrompt.ts";
+import { SYSTEM_PROMPT, ticketTaskPrompt } from "./systemPrompt.ts";
 
 export type RunListener = (event: RecordedEvent) => void;
 
@@ -45,7 +45,7 @@ export class AgentRunner {
     const finished = (async () => {
       let toolbox;
       try {
-        toolbox = await connectToolbox();
+        toolbox = await connectToolbox({ runId: run.id });
         const result = await runAgentLoop({ system: SYSTEM_PROMPT, input, toolbox, emit });
         run.status = "completed";
         run.answer = result.answer;
@@ -66,6 +66,16 @@ export class AgentRunner {
     })();
 
     return { runId: run.id, finished };
+  }
+
+  /** 티켓 작업 실행. 담당자를 Agent 로 바꾸면 호출된다. */
+  startTicketRun(ticketId: string): string {
+    return this.start(ticketTaskPrompt(ticketId), { kind: "ticket", ticketId }).runId;
+  }
+
+  isTicketRunning(ticketId: string): boolean {
+    return this.store.data.runs.some((r) =>
+      r.status === "running" && r.trigger.kind === "ticket" && r.trigger.ticketId === ticketId && this.live.has(r.id));
   }
 
   /**

@@ -19,13 +19,18 @@ export interface Toolbox {
   close(): Promise<void>;
 }
 
-export async function connectToolbox(
-  url = process.env.MCP_URL || "http://localhost:8788/mcp",
-  token = process.env.MCP_AGENT_TOKEN || "",
-): Promise<Toolbox> {
+export async function connectToolbox(opts: { url?: string; token?: string; runId?: string } = {}): Promise<Toolbox> {
+  const url = opts.url || process.env.MCP_URL || "http://localhost:8788/mcp";
+  const token = opts.token ?? process.env.MCP_AGENT_TOKEN ?? "";
   const client = new Client({ name: "kb-policy-agent", version: "0.1.0" });
   const transport = new StreamableHTTPClientTransport(new URL(url), {
-    requestInit: { headers: { Authorization: `Bearer ${token}` } },
+    requestInit: {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // 어느 실행에서 온 호출인지 알려준다 → 에이전트가 남긴 코멘트/티켓에 실행 기록이 연결된다
+        ...(opts.runId && { "X-Agent-Run-Id": opts.runId }),
+      },
+    },
   });
   await client.connect(transport);
 
