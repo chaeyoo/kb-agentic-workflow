@@ -33,8 +33,9 @@ export function boardRoutes(store: FileStore, board: BoardService, runner: Agent
     // 이 티켓을 만든 실행 (Q&A 에서 에이전트가 정책 공백 티켓을 만든 경우)
     const createdByRun = store.data.runs.find((r) => r.events.some(
       (e) => e.type === "tool_result" && e.name === "create_ticket" && e.ok && e.output.includes(`"ticketId": "${ticket.id}"`)));
+    const proposals = store.data.proposals.filter((p) => p.sourceTicketId === ticket.id);
     return c.json({
-      ticket, comments: board.getComments(ticket.id), sections, runs,
+      ticket, comments: board.getComments(ticket.id), sections, runs, proposals,
       createdByRunId: createdByRun?.id, agentRunning: runner.isTicketRunning(ticket.id),
     });
   });

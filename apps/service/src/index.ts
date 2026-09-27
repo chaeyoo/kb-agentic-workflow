@@ -6,15 +6,17 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { BoardService, FileStore, PolicyService } from "@kb/core";
+import { BoardService, FileStore, PolicyService, ProposalService } from "@kb/core";
 import { AgentRunner } from "./agent/runner.ts";
 import { boardRoutes } from "./api/board.ts";
 import { policyRoutes } from "./api/policies.ts";
+import { proposalRoutes } from "./api/proposals.ts";
 import { runRoutes } from "./api/runs.ts";
 
 const store = new FileStore();
 const policies = new PolicyService(store);
 const board = new BoardService(store);
+const proposals = new ProposalService(store);
 const runner = new AgentRunner(store);
 
 const app = new Hono();
@@ -23,6 +25,7 @@ app.get("/api/health", (c) => c.json({ ok: true }));
 app.route("/api", policyRoutes(policies));
 app.route("/api", runRoutes(store, runner));
 app.route("/api", boardRoutes(store, board, runner));
+app.route("/api", proposalRoutes(proposals, board, runner));
 app.post("/api/admin/reset", (c) => { store.reset(); return c.json({ ok: true }); });
 
 // 운영: apps/web 빌드 결과를 같은 서버에서 서빙한다. (개발 중에는 vite dev server 가 5173 에서 뜬다)
