@@ -152,3 +152,10 @@ table.tools { margin-top: 10px; }
 .badge.scope-read { background: #e7f5ff; color: #1971c2; } .badge.scope-propose { background: #fff4e6; color: var(--warn); }
 .compare { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
 table.tools td:nth-child(-n+4), table.tools th { white-space: nowrap; }
+
+/* 리플레이 */
+.replay-bar { display: flex; gap: 8px; align-items: center; margin-top: 12px; }
+.replay-bar h3 { margin: 0 auto 0 0; }
+.replay-bar button { padding: 3px 10px; font-size: 12px; }
+.badge.mode-replay { background: #fff3bf; color: #946800; font-weight: 600; }
+.badge.mode-live { background: #ebfbee; color: var(--ok); }

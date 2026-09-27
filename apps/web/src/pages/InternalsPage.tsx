@@ -3,7 +3,7 @@
 //   도구: 에이전트가 MCP 에서 받은 도구 목록, 권한, 승인 설정, description v1/v2 비교
 import { useEffect, useState } from "react";
 import { api, type AgentRun } from "../api.ts";
-import { usePolling, useRunEvents } from "../hooks.ts";
+import { usePolling, useReplay, useRunEvents } from "../hooks.ts";
 import { RichText } from "../components/RichText.tsx";
 import { Timeline } from "../components/Timeline.tsx";
 
@@ -41,8 +41,19 @@ function RunsView({ runId }: { runId?: string }) {
   const { data: runs } = usePolling(() => api.get<RunSummary[]>("/runs"), [], 3000);
   const selected = runId ?? runs?.[0]?.id;
   const [run, setRun] = useState<AgentRun>();
-  const { events, done } = useRunEvents(selected);
-  useEffect(() => { if (selected) api.get<AgentRun>(`/runs/${selected}`).then(setRun); }, [selected, done]);
+  const { events: liveEvents, done } = useRunEvents(selected);
+  const [speed, setSpeed] = useState(1);
+  const replay = useReplay(liveEvents, speed);
+  const events = replay.events;
+  const [saved, setSaved] = useState<string>();
+  useEffect(() => { setSaved(undefined); if (selected) api.get<AgentRun>(`/runs/${selected}`).then(setRun); }, [selected, done]);
+
+  async function saveFixture() {
+    const name = prompt("fixture 이름 (예: 01-qa-minor-booking)", run?.id);
+    if (!name || !run) return;
+    const r = await api.post<{ file: string }>(`/runs/${run.id}/fixture`, { name });
+    setSaved(r.file);
+  }
 
   return (
     <div className="runs-layout">
@@ -71,7 +82,17 @@ function RunsView({ runId }: { runId?: string }) {
             토큰: 입력 {n(run.tokenUsage.inputTokens)} · 캐시 읽기 {n(run.tokenUsage.cacheReadTokens)} · 출력 {n(run.tokenUsage.outputTokens)}
             {run.durationMs !== undefined && <> · {(run.durationMs / 1000).toFixed(1)}s</>} · 이벤트 {events.length}개
           </div>
-          <h3>타임라인</h3>
+          <div className="replay-bar">
+            <h3>타임라인</h3>
+            {replay.playing
+              ? <button className="secondary" onClick={replay.stop}>■ 멈춤</button>
+              : <button className="secondary" disabled={!done} onClick={replay.play}>▶ 원래 속도로 다시 보기</button>}
+            <select value={speed} onChange={(e) => setSpeed(Number(e.target.value))}>
+              {[0.5, 1, 2, 4].map((x) => <option key={x} value={x}>{x}x</option>)}
+            </select>
+            <button className="secondary" disabled={run.status !== "completed"} onClick={saveFixture}>📼 리플레이 fixture 로 저장</button>
+          </div>
+          {saved && <div className="notice small">저장됨: <code>{saved}</code> — <code>LLM_MODE=replay</code> 로 실행하면 이 입력에 이 응답이 재생됩니다.</div>}
           <Timeline events={events} />
         </div>
       )}

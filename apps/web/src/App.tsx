@@ -10,7 +10,11 @@ export function App() {
   const [page = "qa", a, b] = useRoute();
   const [users, setUsers] = useState<{ name: string; role: string }[]>([]);
   const [user, setUserState] = useState(getUser());
-  useEffect(() => { api.get<{ name: string; role: string }[]>("/users").then(setUsers); }, []);
+  const [health, setHealth] = useState<{ llmMode: string; model: string }>();
+  useEffect(() => {
+    api.get<{ name: string; role: string }[]>("/users").then(setUsers);
+    api.get<{ llmMode: string; model: string }>("/health").then(setHealth).catch(() => {});
+  }, []);
 
   const nav = [["qa", "Q&A"], ["board", "보드"], ["policies", "정책서"], ["internals", "Internals"]] as const;
   return (
@@ -18,6 +22,11 @@ export function App() {
       <header className="topbar">
         <strong>📘 정책 에이전트</strong>
         <nav>{nav.map(([id, label]) => <a key={id} href={`#/${id}`} className={page === id ? "active" : ""}>{label}</a>)}</nav>
+        {health && (
+          <span className={`badge mode-${health.llmMode}`} title={health.model}>
+            {health.llmMode === "replay" ? "📼 REPLAY 모드" : `LIVE · ${health.model}`}
+          </span>
+        )}
         <label className="user">
           나는
           <select value={user} onChange={(e) => { setUser(e.target.value); setUserState(e.target.value); }}>

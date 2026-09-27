@@ -39,3 +39,26 @@ export function useRoute(): string[] {
   }, []);
   return route;
 }
+
+/**
+ * 저장된 이벤트를 원래 시간 간격대로 다시 흘려보낸다 (화면 리플레이).
+ * 긴 대기(모델 응답 대기 등)는 maxGapMs 로 잘라서 발표 중 지루하지 않게 한다.
+ */
+export function useReplay<T extends { t: number }>(source: T[], speed = 1, maxGapMs = 1500) {
+  const [playing, setPlaying] = useState(false);
+  const [count, setCount] = useState(source.length);
+  useEffect(() => { setCount(source.length); setPlaying(false); }, [source]);
+  useEffect(() => {
+    if (!playing) return;
+    if (count >= source.length) { setPlaying(false); return; }
+    const gap = count === 0 ? 300 : Math.min(maxGapMs, source[count]!.t - source[count - 1]!.t) / speed;
+    const timer = setTimeout(() => setCount((c) => c + 1), Math.max(0, gap));
+    return () => clearTimeout(timer);
+  }, [playing, count, source, speed, maxGapMs]);
+  return {
+    events: source.slice(0, count),
+    playing,
+    play: () => { setCount(0); setPlaying(true); },
+    stop: () => { setPlaying(false); setCount(source.length); },
+  };
+}
