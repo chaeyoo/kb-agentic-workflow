@@ -12,6 +12,10 @@
 
 ## 아키텍처
 
+![전체 구조](images/architecture.png)
+
+> 원본: [images/architecture.svg](images/architecture.svg) (텍스트로 수정 가능)
+
 ```mermaid
 flowchart LR
   subgraph clients[AI 클라이언트]

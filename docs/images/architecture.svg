@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100" font-family="Pretendard, 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', 'WenQuanYi Zen Hei', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#444"/>
+    </marker>
+    <marker id="arrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2e9e5b"/>
+    </marker>
+    <marker id="arrowO" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#d9731a"/>
+    </marker>
+    <style>
+      .t { font-size: 17px; font-weight: 700; fill: #1b1f24; }
+      .s { font-size: 14px; fill: #444; }
+      .xs { font-size: 12.5px; fill: #666; }
+      .mono { font-family: 'JetBrains Mono', Menlo, Consolas, monospace; font-size: 13px; fill: #333; }
+      .hdr { font-size: 19px; font-weight: 800; }
+      .badge { font-size: 15px; font-weight: 800; fill: #fff; }
+      .edge { font-size: 13px; fill: #333; font-weight: 600; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1100" fill="#ffffff"/>
+
+  <!-- 제목 -->
+  <text x="40" y="52" font-size="28" font-weight="800" fill="#1b1f24">도메인 정책 에이전트 워크플로우 — 전체 구조</text>
+  <text x="40" y="80" class="s">에이전트와 개발자 AI 도구가 같은 MCP 서버로 같은 정책서를 본다. 권한(토큰)만 다르고, 정책을 바꾸는 건 사람의 승인뿐.</text>
+
+  <!-- ============ 사람 ============ -->
+  <text x="40" y="140" class="hdr" fill="#555">사람</text>
+
+  <rect x="40" y="170" width="250" height="140" rx="12" fill="#f4f5f7" stroke="#9aa1ab" stroke-width="1.5"/>
+  <text x="58" y="200" class="t">👩‍💻 개발자</text>
+  <text x="58" y="224" class="s">외주 · 클라이언트팀</text>
+  <text x="58" y="252" class="s">자기 AI 도구로 코딩 중</text>
+  <text x="58" y="274" class="s">Claude Code / Cursor</text>
+  <text x="58" y="296" class="xs">→ 정책을 조회만</text>
+
+  <rect x="40" y="420" width="250" height="120" rx="12" fill="#f4f5f7" stroke="#9aa1ab" stroke-width="1.5"/>
+  <text x="58" y="450" class="t">🙋 질문하는 사람</text>
+  <text x="58" y="476" class="s">기획 · CS · 개발 누구나</text>
+  <text x="58" y="502" class="s">웹 Q&amp;A 또는</text>
+  <text x="58" y="524" class="mono">pnpm ask "질문"</text>
+
+  <rect x="40" y="640" width="250" height="150" rx="12" fill="#f4f5f7" stroke="#9aa1ab" stroke-width="1.5"/>
+  <text x="58" y="670" class="t">🧑‍⚖️ 정책 담당자</text>
+  <text x="58" y="696" class="s">기획 · 문서 담당 (예: 한서윤)</text>
+  <text x="58" y="724" class="s">보드에서 결정 코멘트</text>
+  <text x="58" y="748" class="s">변경안 승인 / 수정요청</text>
+  <text x="58" y="772" class="xs">→ 정책을 바꾸는 유일한 주체</text>
+
+  <!-- ============ service 서버 ============ -->
+  <rect x="360" y="150" width="660" height="780" rx="16" fill="#f3f7ff" stroke="#3b6fd8" stroke-width="2"/>
+  <text x="380" y="140" class="hdr" fill="#2b58b8">service 서버 · Hono :8787</text>
+
+  <rect x="390" y="180" width="600" height="92" rx="10" fill="#fff" stroke="#8fb0ef"/>
+  <text x="410" y="208" class="t">웹 UI (React)</text>
+  <text x="410" y="234" class="s">Q&amp;A · 보드(칸반) · 정책서 뷰어(버전·diff) · /internals</text>
+  <text x="410" y="258" class="xs">SSE 로 에이전트 타임라인을 실시간 표시 · 리플레이 재생</text>
+
+  <rect x="390" y="310" width="600" height="100" rx="10" fill="#fff" stroke="#8fb0ef"/>
+  <text x="410" y="338" class="t">REST API</text>
+  <text x="410" y="362" class="mono">/api/policies · /board · /proposals · /runs · /ask</text>
+  <text x="410" y="390" class="s">✅ 변경안 승인(review)은 <tspan font-weight="700">사람만</tspan> → 섹션 새 버전 생성 (v2 → v3)</text>
+
+  <rect x="390" y="440" width="600" height="84" rx="10" fill="#fff" stroke="#8fb0ef"/>
+  <text x="410" y="468" class="t">AgentRunner</text>
+  <text x="410" y="494" class="s">실행마다 AgentRun 기록(이벤트 · 토큰 · 소요시간) · SSE 구독</text>
+  <text x="410" y="514" class="xs">담당자를 🤖 Agent 로 바꾸거나 수정요청하면 티켓 작업을 시작</text>
+
+  <rect x="390" y="554" width="600" height="126" rx="10" fill="#e3ecff" stroke="#3b6fd8" stroke-width="1.5"/>
+  <text x="410" y="584" class="t">에이전트 루프  <tspan class="mono" font-weight="400">agent/loop.ts</tspan>  <tspan class="xs" font-weight="400">~120줄 · 프레임워크 없음</tspan></text>
+  <text x="410" y="612" class="s">모델 호출 → 도구 실행 → 결과를 모델에 전달 → 끝날 때까지 반복</text>
+  <g font-size="12" fill="#2b58b8">
+    <rect x="410" y="630" width="70" height="24" rx="12" fill="#fff" stroke="#8fb0ef"/><text x="445" y="647" text-anchor="middle">thinking</text>
+    <rect x="486" y="630" width="72" height="24" rx="12" fill="#fff" stroke="#8fb0ef"/><text x="522" y="647" text-anchor="middle">tool_call</text>
+    <rect x="564" y="630" width="82" height="24" rx="12" fill="#fff" stroke="#8fb0ef"/><text x="605" y="647" text-anchor="middle">tool_result</text>
+    <rect x="652" y="630" width="130" height="24" rx="12" fill="#fff4d6" stroke="#e0b44a"/><text x="717" y="647" text-anchor="middle">approval_required</text>
+    <rect x="788" y="630" width="104" height="24" rx="12" fill="#fff" stroke="#8fb0ef"/><text x="840" y="647" text-anchor="middle">message_delta</text>
+    <rect x="898" y="630" width="44" height="24" rx="12" fill="#fff" stroke="#8fb0ef"/><text x="920" y="647" text-anchor="middle">error</text>
+    <rect x="946" y="630" width="38" height="24" rx="12" fill="#fff" stroke="#8fb0ef"/><text x="965" y="647" text-anchor="middle">done</text>
+  </g>
+  <text x="410" y="672" class="xs">이벤트 7종 → AgentRun 에 저장 → 타임라인 · 리플레이의 원천</text>
+
+  <rect x="390" y="720" width="330" height="180" rx="10" fill="#fffbea" stroke="#d6b64a" stroke-width="1.5"/>
+  <text x="410" y="748" class="t">🗂 파일 저장소</text>
+  <text x="410" y="770" class="mono">data/store.json</text>
+  <text x="410" y="798" class="s">• 정책서 5개 · 섹션별 버전 이력</text>
+  <text x="410" y="820" class="s">• 티켓 · 코멘트 (보드)</text>
+  <text x="410" y="842" class="s">• 변경안 (diff · 승인 상태)</text>
+  <text x="410" y="864" class="s">• AgentRun · Q&amp;A 기록</text>
+  <text x="410" y="888" class="xs">DB 없음 · 모두 가상 데이터 · seed:reset 으로 초기화</text>
+
+  <rect x="750" y="720" width="240" height="84" rx="10" fill="#fff" stroke="#8fb0ef"/>
+  <text x="770" y="748" class="t">LLM 호출 <tspan class="mono" font-weight="400">llm.ts</tspan></text>
+  <text x="770" y="772" class="s">live: Claude API 스트리밍</text>
+  <text x="770" y="794" class="s">replay: 녹화 재생 (오프라인)</text>
+
+  <rect x="750" y="830" width="240" height="70" rx="10" fill="#fff" stroke="#8fb0ef" stroke-dasharray="5 4"/>
+  <text x="770" y="858" class="t">🎞 fixtures/runs</text>
+  <text x="770" y="882" class="xs">녹화된 실행 · 발표 당일 장애 대비</text>
+
+  <!-- ============ MCP 서버 ============ -->
+  <rect x="1100" y="150" width="460" height="580" rx="16" fill="#effaf3" stroke="#2e9e5b" stroke-width="2"/>
+  <text x="1120" y="140" class="hdr" fill="#23804a">MCP 서버 · :8788 (Streamable HTTP)</text>
+
+  <rect x="1130" y="180" width="400" height="80" rx="10" fill="#fff" stroke="#86cfa3"/>
+  <text x="1150" y="208" class="t">🔐 Bearer 토큰 인증</text>
+  <text x="1150" y="232" class="s">토큰 권한에 맞는 도구만 노출</text>
+  <text x="1150" y="252" class="xs">토큰 없음/틀림 → 401 거부</text>
+
+  <rect x="1130" y="280" width="400" height="170" rx="10" fill="#fff" stroke="#86cfa3"/>
+  <text x="1150" y="308" class="t">조회 도구 <tspan class="xs" font-weight="400">read 토큰 · 개발자 + 에이전트</tspan></text>
+  <text x="1150" y="336" class="mono">search_policies</text>
+  <text x="1150" y="358" class="mono">get_policy_document</text>
+  <text x="1150" y="380" class="mono">get_policy_history</text>
+  <text x="1150" y="402" class="mono">list_open_questions</text>
+  <text x="1150" y="424" class="mono">get_ticket</text>
+  <text x="1360" y="336" class="xs">← RAG 의 검색 단계</text>
+  <text x="1360" y="358" class="xs">   (키워드 + IDF)</text>
+
+  <rect x="1130" y="470" width="400" height="200" rx="10" fill="#fff" stroke="#86cfa3"/>
+  <text x="1150" y="498" class="t">제안 도구 <tspan class="xs" font-weight="400">propose 토큰 · 에이전트만</tspan></text>
+  <text x="1150" y="526" class="mono">create_ticket</text>
+  <text x="1150" y="548" class="mono">add_comment</text>
+  <text x="1150" y="570" class="mono">update_ticket_status</text>
+  <text x="1150" y="592" class="mono">link_policy_section</text>
+  <text x="1150" y="614" class="mono">propose_policy_change <tspan fill="#b7791f">✋</tspan></text>
+  <text x="1150" y="636" class="mono">request_approval <tspan fill="#b7791f">✋</tspan></text>
+  <text x="1150" y="658" class="xs">✋ requiresApproval — 사람이 승인해야 반영</text>
+
+  <text x="1130" y="700" class="s">🚫 정책 직접 수정 도구는 <tspan font-weight="700">없음</tspan></text>
+  <text x="1130" y="720" class="xs">도구 설명(description) v1 / v2 교체 가능</text>
+
+  <!-- ============ Claude API ============ -->
+  <rect x="1100" y="790" width="460" height="110" rx="16" fill="#fff5ec" stroke="#d9731a" stroke-width="2"/>
+  <text x="1120" y="824" class="hdr" fill="#b35c10">Claude API (Anthropic)</text>
+  <text x="1120" y="852" class="s">claude-sonnet-5 · 스트리밍 tool use · adaptive thinking</text>
+  <text x="1120" y="876" class="xs">외부 LLM 으로 전송되므로 정책서 · 코드는 모두 가상 데이터</text>
+
+  <!-- ============ 화살표 ============ -->
+  <!-- ① 개발자 → MCP (read) -->
+  <path d="M290,200 H320 V106 H1500 V150" fill="none" stroke="#2e9e5b" stroke-width="2.5" marker-end="url(#arrowG)"/>
+  <rect x="560" y="93" width="400" height="26" rx="6" fill="#fff"/>
+  <text x="760" y="111" class="edge" text-anchor="middle" fill="#23804a">MCP 직접 연결 · Bearer read 토큰 (조회만)</text>
+
+  <!-- ② 질문하는 사람 → 웹 UI -->
+  <path d="M290,470 H325 V226 H388" fill="none" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+  <!-- ③ 정책 담당자 → 웹 UI -->
+  <path d="M290,715 H345 V256 H388" fill="none" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 내부 흐름 -->
+  <line x1="690" y1="272" x2="690" y2="308" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="690" y1="410" x2="690" y2="438" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="690" y1="524" x2="690" y2="552" stroke="#444" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="870" y1="680" x2="870" y2="718" stroke="#444" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="870" y1="804" x2="870" y2="828" stroke="#444" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrow)"/>
+
+  <!-- REST ↔ 저장소 -->
+  <path d="M390,390 H366 V810 H388" fill="none" stroke="#b8962c" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <text x="384" y="600" class="xs" transform="rotate(-90 384 600)" text-anchor="middle" fill="#8a6d10">읽기 · 쓰기 (service 만 파일에 접근)</text>
+
+  <!-- 루프 → MCP (propose) -->
+  <path d="M990,600 H1128" fill="none" stroke="#2e9e5b" stroke-width="2.5" marker-end="url(#arrowG)"/>
+  <text x="1026" y="622" class="xs" fill="#23804a">MCP 연결</text>
+  <text x="1026" y="638" class="xs" fill="#23804a">propose 토큰</text>
+  <text x="1026" y="654" class="xs" fill="#23804a">Run-Id 헤더</text>
+
+  <!-- MCP → REST -->
+  <path d="M1128,365 H992" fill="none" stroke="#2e9e5b" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowG)"/>
+  <text x="1060" y="355" class="xs" text-anchor="middle" fill="#23804a">도구 실행 =</text>
+  <text x="1060" y="385" class="xs" text-anchor="middle" fill="#23804a">REST 호출</text>
+
+  <!-- llm → Claude API -->
+  <path d="M990,760 H1050 V845 H1098" fill="none" stroke="#d9731a" stroke-width="2.5" marker-end="url(#arrowO)"/>
+
+  <!-- 번호 배지 -->
+  <circle cx="540" cy="106" r="14" fill="#2e9e5b"/><text x="540" y="111" class="badge" text-anchor="middle">1</text>
+  <circle cx="325" cy="350" r="14" fill="#3b6fd8"/><text x="325" y="355" class="badge" text-anchor="middle">2</text>
+  <circle cx="345" cy="600" r="14" fill="#7a4fd0"/><text x="345" y="605" class="badge" text-anchor="middle">3</text>
+
+  <!-- ============ 범례 ============ -->
+  <rect x="40" y="955" width="1520" height="120" rx="12" fill="#fafafa" stroke="#e1e4e8"/>
+  <circle cx="68" cy="987" r="12" fill="#2e9e5b"/><text x="68" y="992" class="badge" font-size="13" text-anchor="middle">1</text>
+  <text x="90" y="992" class="s"><tspan font-weight="700">정책 조회</tspan> — 개발자의 AI 도구가 MCP 로 정책을 검색하고 출처(문서 · 섹션 · 버전)와 함께 답한다. read 토큰이라 조회 도구만 보인다.</text>
+  <circle cx="68" cy="1021" r="12" fill="#3b6fd8"/><text x="68" y="1026" class="badge" font-size="13" text-anchor="middle">2</text>
+  <text x="90" y="1026" class="s"><tspan font-weight="700">질의응답 + 공백 감지</tspan> — 에이전트가 같은 MCP 로 검색 → 인용해 답변. 근거가 없거나 문서끼리 모순이면 공백 티켓을 만들어 담당자에게 넘긴다.</text>
+  <circle cx="68" cy="1055" r="12" fill="#7a4fd0"/><text x="68" y="1060" class="badge" font-size="13" text-anchor="middle">3</text>
+  <text x="90" y="1060" class="s"><tspan font-weight="700">정책서 갱신</tspan> — 담당자의 결정 코멘트 → 에이전트가 변경안(diff) 제안 ✋ → 사람이 승인하면 새 버전. 수정요청하면 에이전트가 다시 제안한다.</text>
+</svg>
