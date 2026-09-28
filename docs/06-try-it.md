@@ -105,13 +105,4 @@ pnpm dev
 
 ## Render 배포
 
-`render.yaml` 에 Web Service 2개가 정의돼 있다 (Blueprint). DB 는 없다.
-
-1. Render 에서 Blueprint 로 저장소 연결 → `kb-policy-service`, `kb-policy-mcp` 생성.
-2. 환경변수 채우기 (값은 `.env.example` 참고):
-   - mcp: `SERVICE_URL`(= service 주소), `MCP_TOKENS`(긴 난수 토큰)
-   - service: `ANTHROPIC_API_KEY`, `MCP_URL`(= mcp 주소 + `/mcp`), `MCP_AGENT_TOKEN`, `MCP_TOKENS`(mcp 와 같은 값)
-3. 주의:
-   - `NODE_ENV=production` 을 설정하지 않는다 (devDependencies 인 vite 가 빠져 웹 빌드 실패).
-   - 상태(`data/store.json`)는 재배포/재시작 때 시드로 초기화된다.
-   - free 플랜은 유휴 시 잠든다. 발표 직전에 두 서비스를 한 번씩 깨워 둔다.
+단계별 안내와 점검 스크립트(`pnpm check:deploy`)는 [08-deploy](08-deploy.md) 에 있다.

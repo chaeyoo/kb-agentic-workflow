@@ -37,7 +37,7 @@
 - [ ] 이상한 도구 선택이 있으면 description / 시스템 프롬프트 조정 후 다시
 - [ ] 잘 나온 실행으로 **fixture 4개 녹화** ([04](04-observability.md#fixture-녹화하기-발표-전-필수)) → 커밋
 - [ ] `LLM_MODE=replay` 로 1~6 한 번 통과 확인 (네트워크 끊고)
-- [ ] Render 배포본에서도 1 번 확인, Claude Code 원격 MCP 연결 확인
+- [ ] Render 배포본 점검: `pnpm check:deploy --service ... --mcp ... --llm` ([08](08-deploy.md#3-점검)), Claude Code 원격 MCP 연결 확인
 - [ ] 발표 노트북에 `pnpm install` 완료 상태로 저장소 준비 (행사장 네트워크에서 설치하지 않는다)
 
 ## 당일 시작 전

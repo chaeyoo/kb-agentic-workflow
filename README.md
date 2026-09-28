@@ -59,7 +59,7 @@ LLM_MODE=replay pnpm dev     # fixtures/runs 의 녹화된 모델 응답을 재�
 
 ## 배포
 
-`render.yaml` (Render Blueprint): Web Service 2개, DB 없음. 환경변수는 키만 정의돼 있다 → [docs/06](docs/06-try-it.md#render-배포).
+`render.yaml` (Render Blueprint): Web Service 2개, DB 없음. 환경변수는 키만 정의돼 있다 → [docs/08](docs/08-deploy.md).
 
 ## 문서
 
@@ -71,5 +71,6 @@ LLM_MODE=replay pnpm dev     # fixtures/runs 의 녹화된 모델 응답을 재�
 | [03-hitl](docs/03-hitl.md) | 사람이 개입하는 지점과 승인 정책 |
 | [04-observability](docs/04-observability.md) | 이벤트 스트림, AgentRun, /internals, 리플레이 |
 | [05-build-log](docs/05-build-log.md) | 만들어가는 순서와 결정 기록 (커밋 단위) |
-| [06-try-it](docs/06-try-it.md) | 5분 셋업, 도구 추가 실습, Render 배포 |
+| [06-try-it](docs/06-try-it.md) | 5분 셋업, 도구 추가 실습 |
 | [07-demo-rehearsal](docs/07-demo-rehearsal.md) | 발표 시연 순서, 체크리스트, 장애 대응 |
+| [08-deploy](docs/08-deploy.md) | Render 배포, 환경변수, 배포 점검(`pnpm check:deploy`) |

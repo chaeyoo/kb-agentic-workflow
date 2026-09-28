@@ -4,7 +4,7 @@
 # 배포 후 채워야 하는 값:
 #   kb-policy-service: ANTHROPIC_API_KEY, MCP_URL(= mcp 서비스 주소 + /mcp), MCP_AGENT_TOKEN, MCP_TOKENS(internals 표시용, mcp 와 같은 값)
 #   kb-policy-mcp:     SERVICE_URL(= service 서비스 주소), MCP_TOKENS
-# 자세한 설명은 .env.example 과 docs/06-try-it.md.
+# 자세한 설명은 docs/08-deploy.md. 배포 후 점검: pnpm check:deploy --service <주소> --mcp <주소>/mcp
 services:
   - type: web
     name: kb-policy-service

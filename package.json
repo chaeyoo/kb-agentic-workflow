@@ -11,6 +11,7 @@
     "start:service": "pnpm --filter @kb/service start",
     "start:mcp": "pnpm --filter @kb/mcp start",
     "ask": "pnpm --filter @kb/service ask",
+    "check:deploy": "pnpm --filter @kb/service check:deploy",
     "seed:reset": "pnpm --filter @kb/core seed:reset",
     "typecheck": "pnpm -r typecheck"
   },
