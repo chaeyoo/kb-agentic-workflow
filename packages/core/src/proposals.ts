@@ -50,6 +50,9 @@ export class ProposalService {
     if (input.baseVersion !== undefined && input.baseVersion !== current.version) {
       throw new BoardError(409, `기준 버전 v${input.baseVersion} 이 현재 버전 v${current.version} 과 다릅니다. 최신 본문을 다시 조회하세요`);
     }
+    if (typeof input.proposedBody !== "string" || typeof input.rationale !== "string") {
+      throw new BoardError(400, "proposedBody 와 rationale 이 필요합니다");
+    }
     const heading = input.proposedHeading?.trim() || current.heading;
     const body = input.proposedBody.trim();
     if (body === current.body && heading === current.heading) throw new BoardError(400, "현재 본문과 같습니다. 바뀐 내용이 없습니다");
@@ -85,16 +88,18 @@ export class ProposalService {
     if (p.status !== "pending") throw new BoardError(409, `이미 처리된 변경안입니다 (${p.status})`);
     if (action !== "approve" && !comment.trim()) throw new BoardError(400, "수정요청/거절에는 이유가 필요합니다");
 
+    // 검증을 모두 마친 뒤에 기록한다 (거부된 승인 시도가 검토 흔적을 남기지 않게)
+    const current = action === "approve" ? this.active(p.sectionKey) : undefined;
+    if (current && current.version !== p.baseVersion) {
+      throw new BoardError(409, `그 사이 섹션이 v${current.version} 으로 바뀌었습니다. 수정요청으로 다시 제안받으세요`);
+    }
+
     p.reviewer = reviewer;
     p.reviewComment = comment.trim() || undefined;
     p.reviewedAt = new Date().toISOString();
 
     let section: PolicySection | undefined;
-    if (action === "approve") {
-      const current = this.active(p.sectionKey);
-      if (current.version !== p.baseVersion) {
-        throw new BoardError(409, `그 사이 섹션이 v${current.version} 으로 바뀌었습니다. 수정요청으로 다시 제안받으세요`);
-      }
+    if (current) {
       const doc = this.d.documents.find((d) => d.id === current.documentId)!;
       doc.currentVersion += 1;
       current.status = "deprecated";

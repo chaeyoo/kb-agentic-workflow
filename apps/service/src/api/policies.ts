@@ -16,12 +16,14 @@ export function policyRoutes(policies: PolicyService) {
 
   app.get("/policies/:documentId", (c) => {
     const v = c.req.query("version");
+    if (v && !/^\d+$/.test(v)) return c.json({ error: "version 은 숫자여야 합니다" }, 400);
     const view = policies.viewDocument(c.req.param("documentId"), v ? Number(v) : undefined);
     return view ? c.json(view) : c.json({ error: "문서를 찾을 수 없습니다" }, 404);
   });
 
   app.get("/sections/:key", (c) => {
     const v = c.req.query("version");
+    if (v && !/^\d+$/.test(v)) return c.json({ error: "version 은 숫자여야 합니다" }, 400);
     const section = policies.getSection(c.req.param("key"), v ? Number(v) : undefined);
     return section ? c.json(section) : c.json({ error: "섹션을 찾을 수 없습니다" }, 404);
   });
