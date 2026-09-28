@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>정책 에이전트 발표</title>
+<!--
+  발표 슬라이드 (의존성 없음, 오프라인에서도 열림)
+  - 개발: http://localhost:5173/slides.html   운영: https://<service>/slides.html
+  - ← → / Space / PageUp·Down: 이동   N: 발표자 노트   F: 전체화면   Home/End: 처음/끝
+  - 주소 뒤 #5 처럼 번호를 붙이면 그 슬라이드부터 연다.
+  - 데모 링크(/#/qa 등)는 같은 서버의 웹 UI 로 이동한다.
+-->
+<style>
+  :root {
+    --bg: #0f1420; --paper: #ffffff; --ink: #1b1f24; --muted: #667085; --line: #e4e7ec;
+    --blue: #3b6fd8; --blue-soft: #eef4ff; --green: #2e9e5b; --green-soft: #effaf3;
+    --orange: #d9731a; --orange-soft: #fff5ec; --purple: #7048e8; --purple-soft: #f3f0ff;
+    --yellow-soft: #fffbea; --red: #c92a2a;
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+  a { color: var(--blue); }
+  code, pre { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+  /* 1280x720 캔버스를 화면 크기에 맞춰 확대/축소 */
+  #stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; transform-origin: center; }
+  .slide {
+    position: absolute; inset: 0; background: var(--paper); color: var(--ink);
+    border-radius: 14px; padding: 64px 80px 56px; display: none; flex-direction: column; overflow: hidden; word-break: keep-all;
+  }
+  .slide.active { display: flex; }
+  .slide h1 { font-size: 46px; line-height: 1.25; margin: 0 0 18px; letter-spacing: -0.02em; }
+  .slide h2 { font-size: 36px; line-height: 1.3; margin: 0 0 28px; letter-spacing: -0.02em; }
+  .slide p, .slide li { font-size: 24px; line-height: 1.6; }
+  .slide ul { margin: 0; padding-left: 1.1em; }
+  .slide li + li { margin-top: 10px; }
+  .kicker { font-size: 17px; font-weight: 700; letter-spacing: .08em; color: var(--blue); margin-bottom: 14px; }
+  .muted { color: var(--muted); }
+  .slide .small, .slide .small li { font-size: 18px; }
+  .slide .foot { margin: auto 0 0; font-size: 18px; color: var(--muted); }
+  .em { color: var(--blue); font-weight: 800; }
+  .hl { background: linear-gradient(transparent 60%, #ffe58f 60%); }
+
+  /* 표지 · 막 구분 */
+  .slide.cover { background: linear-gradient(135deg, #1d2b53 0%, #3b6fd8 100%); color: #fff; justify-content: center; }
+  .slide.cover .kicker { color: #b8ccff; }
+  .slide.cover h1 { font-size: 56px; }
+  .slide.cover p { color: #dbe5ff; }
+  .slide.act { background: #f6f8fc; justify-content: center; }
+  .slide.act .num { font-size: 22px; font-weight: 800; color: var(--blue); }
+  .slide.act h1 { font-size: 58px; }
+
+  /* 카드 */
+  .grid { display: grid; gap: 22px; }
+  .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); }
+  .card { border: 1.5px solid var(--line); border-radius: 14px; padding: 24px 26px; background: #fff; }
+  .card h3 { font-size: 24px; margin: 0 0 10px; }
+  .card p { font-size: 20px; margin: 0; line-height: 1.55; }
+  .card .icon { font-size: 36px; margin-bottom: 8px; }
+  .card.blue { background: var(--blue-soft); border-color: #bcd0f7; }
+  .card.green { background: var(--green-soft); border-color: #b4e2c6; }
+  .card.orange { background: var(--orange-soft); border-color: #f3c9a3; }
+  .card.purple { background: var(--purple-soft); border-color: #d3c6f7; }
+  .card.yellow { background: var(--yellow-soft); border-color: #eedb95; }
+
+  /* 표 */
+  table { border-collapse: collapse; width: 100%; font-size: 21px; }
+  th, td { text-align: left; padding: 13px 16px; border-bottom: 1.5px solid var(--line); vertical-align: top; }
+  th { font-size: 17px; color: var(--muted); font-weight: 700; }
+  td code { font-size: 18px; }
+
+  /* 큰 질문 */
+  .question { font-size: 50px; font-weight: 800; line-height: 1.35; letter-spacing: -0.02em; margin: auto 0; }
+  .question small { display: block; font-size: 24px; font-weight: 500; color: var(--muted); margin-top: 26px; }
+
+  /* 타임라인 (1막) */
+  .flow { display: flex; align-items: stretch; gap: 14px; margin-top: 6px; }
+  .flow .step { flex: 1; border-radius: 14px; padding: 22px; background: #f4f5f7; border: 1.5px solid var(--line); }
+  .flow .step b { display: block; font-size: 22px; margin-bottom: 6px; }
+  .flow .step span { font-size: 19px; color: #444; line-height: 1.5; }
+  .flow .arrow { align-self: center; font-size: 30px; color: var(--muted); }
+
+  /* 코드 */
+  pre.code {
+    background: #0f172a; color: #e2e8f0; border-radius: 12px; padding: 22px 26px; margin: 0;
+    font-size: 16px; line-height: 1.6; overflow: hidden;
+  }
+  pre.code .c { color: #7f8ea3; } pre.code .k { color: #93c5fd; } pre.code .s { color: #fcd34d; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { font-size: 17px; padding: 6px 14px; border-radius: 999px; border: 1.5px solid #bcd0f7; background: var(--blue-soft); color: #2b58b8; font-family: ui-monospace, Menlo, monospace; }
+  .chip.warn { border-color: #eedb95; background: #fff8db; color: #8a6d10; }
+
+  .img-fit { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .img-fit img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+
+  .demo-link { display: inline-block; font-size: 16px; padding: 4px 12px; border-radius: 999px; background: var(--blue); color: #fff; text-decoration: none; margin-left: 6px; vertical-align: middle; }
+  .demo-link:hover { background: #2b58b8; }
+
+  /* 진행 표시 · 노트 */
+  #bar { position: fixed; left: 0; bottom: 0; height: 4px; background: var(--blue); transition: width .2s; z-index: 5; }
+  #count { position: fixed; right: 16px; bottom: 12px; font-size: 13px; color: #8a94a6; z-index: 5; font-family: ui-monospace, monospace; }
+  #help { position: fixed; left: 16px; bottom: 12px; font-size: 13px; color: #5d6679; z-index: 5; }
+  .notes { display: none; }
+  #notes {
+    position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; z-index: 6;
+    background: rgba(15, 20, 32, .96); color: #e8ecf4; padding: 18px 28px 28px; font-size: 17px; line-height: 1.7;
+    border-top: 2px solid var(--blue); display: none; white-space: pre-line;
+  }
+  body.show-notes #notes { display: block; }
+  #notes b { color: #9cb8ff; }
+  @media print {
+    html, body { overflow: visible; background: #fff; }
+    #stage { position: static; transform: none !important; width: auto; height: auto; }
+    .slide { display: flex !important; position: relative; width: 1280px; height: 720px; page-break-after: always; border-radius: 0; }
+    #bar, #count, #help, #notes { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- ======================= 표지 ======================= -->
+<section class="slide cover">
+  <div class="kicker">클라이언트팀 공유 · 2026. 10. 1</div>
+  <h1>정책이 사람 머리가 아니라<br />시스템에 남게</h1>
+  <p style="font-size:26px">도메인 정책 에이전트 워크플로우 — 만들면서 배운 agentic workflow</p>
+  <p class="small" style="margin-top:40px">※ 오늘 데모의 정책서 · 티켓 · 사용자는 모두 가상 데이터입니다.</p>
+  <aside class="notes">
+    인사. 오늘은 "만든 것" 보여 드리는 것 + "만들면서 배운 것" 나누는 것 두 가지입니다.
+    데모 데이터는 전부 가상이라는 점 먼저 말해 두기 (외부 LLM 으로 전송되기 때문).
+  </aside>
+</section>
+
+<!-- ======================= 훅 질문 ======================= -->
+<section class="slide">
+  <div class="kicker">먼저 질문 하나</div>
+  <div class="question">
+    만 14세 미만 사용자는<br />검진 예약을 <span class="hl">혼자</span> 할 수 있을까요?
+    <small>바로 답할 수 있는 분? 어느 문서를 보면 되는지 아시는 분?</small>
+  </div>
+  <aside class="notes">
+    손 들어 보게 하기. 잠깐 기다리기.
+    "저도 이 질문에 바로 답을 못 했던 적이 많습니다." → 1막으로.
+    (데모 정책서 기준으로는 회원 자격 정책과 보호자 동의 정책이 서로 다르게 말한다 — 뒤에서 보여 줌)
+  </aside>
+</section>
+
+<!-- ======================= 1막 ======================= -->
+<section class="slide act">
+  <div class="num">1막</div>
+  <h1>검진을 처음 시작했을 때</h1>
+  <p class="muted">제가 겪은 일</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">1막 · 경험</div>
+  <h2>외주로 시작해서, 우리가 이어받았습니다</h2>
+  <div class="flow">
+    <div class="step"><b>🧾 외주 기획</b><span>정책과 화면을<br />외부에서 설계</span></div>
+    <div class="arrow">+</div>
+    <div class="step"><b>🧑‍💻 외주 개발</b><span>도메인 맥락은<br />코드 속에만 남음</span></div>
+    <div class="arrow">→</div>
+    <div class="step" style="background:var(--blue-soft);border-color:#bcd0f7"><b>🏢 우리 팀이 인수</b><span>개선 개발 + 운영을<br />지금까지 이어 오는 중</span></div>
+  </div>
+  <p style="margin-top:40px">"원래 정책이 뭐였지?" 를 <span class="em">문서가 아니라 코드에서</span> 역추적하는 일이 잦았습니다.</p>
+  <aside class="notes">
+    검진 서비스 시작 당시: 기획도 외주, 개발도 외주. 이후 우리 회사가 이어받아 개선 개발·운영 중.
+    외주사 탓이 아니라 "구조" 이야기라는 톤 유지.
+  </aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">1막 · 페인포인트</div>
+  <h2>그래서 생긴 세 가지 문제</h2>
+  <div class="grid g3">
+    <div class="card orange"><div class="icon">📄</div><h3>정책</h3><p>정책이 제대로 관리되지 않는다. 최신본이 어디인지, 왜 바뀌었는지 모른다.</p></div>
+    <div class="card blue"><div class="icon">🛠</div><h3>운영</h3><p>운영하는 분들이 어디까지 구현되어 있는지, 무엇이 정책인지 알기 어렵다.</p></div>
+    <div class="card purple"><div class="icon">🩺</div><h3>개발</h3><p>검진은 어려운 도메인이다. 개발자가 도메인을 깊이 이해하기 어렵다.</p></div>
+  </div>
+  <p class="foot">세 문제 모두 뿌리는 같습니다 — 정책이 <b>사람 머리와 흩어진 문서</b>에만 있다.</p>
+  <aside class="notes">
+    각 카드 한 문장씩. 청중(클라이언트팀)도 겪어 봤을 법한 장면으로 말하기.
+    마지막 줄: 사람이 바뀌면 정책도 같이 사라진다.
+  </aside>
+</section>
+
+<!-- ======================= 2막 ======================= -->
+<section class="slide act">
+  <div class="num">2막</div>
+  <h1>그런데, 이번에 또…</h1>
+  <p class="muted">리빌딩</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">2막 · 같은 조건이 다시 온다</div>
+  <h2>회사 앱 전체 리빌딩</h2>
+  <div class="grid g3">
+    <div class="card"><div class="icon">🧾</div><h3>외주 기획</h3><p>정책 결정이 외부에서 빠르게 내려진다</p></div>
+    <div class="card"><div class="icon">🧑‍💻</div><h3>외주 개발</h3><p>도메인을 처음 접하는 개발자들</p></div>
+    <div class="card"><div class="icon">⏱</div><h3>짧은 기간</h3><p>문서화는 늘 마지막 순위</p></div>
+  </div>
+  <p style="margin-top:40px">솔직히, <span class="em">같은 일이 또 생길까</span> 걱정됐습니다.</p>
+  <aside class="notes">
+    "이번에 회사 앱들 다 리빌딩하잖아요. 외주 기획에, 외주 개발에, 기간은 짧고."
+    공감 포인트. 잠깐 멈추기.
+  </aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">2막 · 그래서</div>
+  <div class="question">
+    이번엔 <span class="muted" style="text-decoration:line-through">FE 개발자</span>가 아니라<br /><span class="em">AI 개발자</span>로서 대비해 보자.
+    <small>사람 문제가 아니라 구조 문제 — 정책이 시스템에 남으면, 사람이 바뀌어도 사라지지 않는다.</small>
+  </div>
+  <aside class="notes">
+    "그래서 이번엔 FE 개발자가 아니라 AI 개발자로서, 이 문제가 다시 생기면 어떻게 막을 수 있을지 한번 만들어 봤습니다."
+    + 오늘의 두 번째 목적: agentic workflow 지식 공유. "이미 아실 수도 있지만, 직접 뜯어보니 생각보다 단순했어서 나누고 싶었습니다."
+  </aside>
+</section>
+
+<!-- ======================= 3막 ======================= -->
+<section class="slide act">
+  <div class="num">3막</div>
+  <h1>아이디어</h1>
+  <p class="muted">정책을 AI 가 읽고, 지키고, 보충하게</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">3막 · 세 문장</div>
+  <h2>무엇을 만들었나</h2>
+  <div class="grid g3">
+    <div class="card green"><div class="icon">🔌</div><h3>AI 가 읽을 수 있게</h3><p>외주 개발자의 AI 도구도, 우리 에이전트도 <b>같은 MCP 서버</b>에서 정책을 본다.</p></div>
+    <div class="card orange"><div class="icon">🎫</div><h3>모르면 티켓으로</h3><p>근거가 없거나 문서끼리 모순이면, 답을 지어내지 않고 <b>담당자에게 티켓</b>.</p></div>
+    <div class="card purple"><div class="icon">✋</div><h3>결정은 사람이</h3><p>결정 코멘트 → AI 가 <b>변경안(diff)</b> → 사람이 승인해야 새 버전.</p></div>
+  </div>
+  <p class="foot">모든 답에는 출처가 붙는다 — 문서 · 섹션 · 버전 (예: <code>membership.age@2</code>)</p>
+  <aside class="notes">
+    1막의 세 페인포인트와 대응: 개발(읽기) / 정책(공백·모순 감지) / 정책 관리(갱신·이력).
+  </aside>
+</section>
+
+<section class="slide" style="padding:36px 48px 32px">
+  <div class="kicker">3막 · 전체 구조</div>
+  <div class="img-fit"><img src="architecture.svg" alt="전체 구조: 사람(개발자·질문자·정책 담당자), service 서버, MCP 서버, Claude API" /></div>
+  <aside class="notes">
+    ① 개발자 AI 도구 → MCP (read 토큰, 조회만)
+    ② 질문 → 에이전트가 같은 MCP 로 검색 → 인용해 답, 모순이면 티켓
+    ③ 결정 코멘트 → 변경안 ✋ → 사람 승인 → 새 버전
+    핵심: 개발자와 에이전트가 같은 MCP 서버, 권한(토큰)만 다름. 정책 직접 수정 도구는 없음.
+  </aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">3막 · 역할</div>
+  <h2>누가 무엇을 하나</h2>
+  <table>
+    <tr><th>누가</th><th>하는 일</th><th>권한</th></tr>
+    <tr><td>👩‍💻 <b>개발자</b> (외주 · 클라이언트)</td><td>코딩하면서 자기 AI 도구로 정책 <b>조회</b></td><td><code>read</code> 토큰 — 검색 · 조회만</td></tr>
+    <tr><td>🤖 <b>에이전트</b></td><td>공백 · 모순 발견 → 티켓, 결정 반영 변경안 <b>제안</b></td><td><code>propose</code> 토큰 — 정책 직접 수정은 불가</td></tr>
+    <tr><td>🧑‍⚖️ <b>정책 담당자</b> (기획)</td><td>결정을 내리고 변경안을 <b>승인 / 수정요청</b></td><td>웹 화면 — 사람만 승인 가능</td></tr>
+  </table>
+  <p class="foot">개발자는 물어보기만 하면 되고, 정책이 모자라면 그 질문이 곧 담당자에게 가는 티켓이 된다.</p>
+  <aside class="notes">
+    이 시스템은 "정책을 관리하는 쪽" 중심. 개발자는 가장 많이 읽는 사람.
+  </aside>
+</section>
+
+<!-- ======================= 4막 데모 ======================= -->
+<section class="slide act">
+  <div class="num">4막</div>
+  <h1>데모</h1>
+  <p class="muted">페인포인트 하나에 장면 하나</p>
+</section>
+
+<section class="slide">
+  <div class="kicker">4막 · 데모 순서</div>
+  <h2>1막의 문제를 그대로 따라갑니다</h2>
+  <table>
+    <tr><th style="width:26%">페인포인트</th><th>장면</th></tr>
+    <tr><td>🩺 개발자가 도메인을 모름</td><td>개발자의 Claude Code 에서 정책 질문 → 출처가 붙은 답</td></tr>
+    <tr><td>📄 정책이 모순 · 누락</td><td>처음의 질문을 다시 → "문서 간 모순" 판정 → 공백 티켓 T-5 <a class="demo-link" href="/#/qa">Q&amp;A 열기</a></td></tr>
+    <tr><td>🛠 정책 관리가 안 됨</td><td>담당자 결정 코멘트 → 변경안 P-1 → 수정요청 → P-2 → 승인 → v3 <a class="demo-link" href="/#/board">보드 열기</a></td></tr>
+    <tr><td>🔁 마무리</td><td>개발자가 같은 질문을 다시 → <b>이번엔 v3 기준으로 답</b> <a class="demo-link" href="/#/policies/membership">정책서 열기</a></td></tr>
+  </table>
+  <p class="foot">장애 대비: <code>LLM_MODE=replay</code> 로 녹화된 실행을 재생 (도구는 실제로 실행됨)</p>
+  <aside class="notes">
+    준비: pnpm seed:reset → pnpm dev. 상단 사용자 "한서윤" 확인.
+    Q&amp;A 질문: 만 14세 미만 사용자는 검진 예약을 스스로 할 수 있나요?
+    결정 코멘트: 결정: 만 14세 미만도 법정대리인 동의가 있으면 가입을 허용합니다. membership.age 를 보호자 동의 정책에 맞춰 주세요.
+    수정요청: 본인인증 섹션과의 관계도 확인 부탁드립니다.
+    Claude Code 연결: claude mcp add --transport http kb-policy http://localhost:8788/mcp --header "Authorization: Bearer dev-read-token"
+    마지막 멘트: "정책이 바뀌면 외주 개발자 AI 도 바로 새 정책을 봅니다."
+  </aside>
+</section>
+
+<!-- ======================= 5막 지식 공유 ======================= -->
+<section class="slide act">
+  <div class="num">5막</div>
+  <h1>agentic workflow 뜯어보기</h1>
+  <p class="muted">직접 만들어 보니, 생각보다 단순했습니다</p>
+  <aside class="notes">"이미 아실 수도 있지만" 은 한 번만. 직접 뜯어본 경험 공유라는 톤.</aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">5막 · ① 에이전트 루프</div>
+  <h2>프레임워크 없이, 120줄이 전부</h2>
+  <div class="grid" style="grid-template-columns: 1.75fr 1fr; align-items:start">
+<pre class="code"><span class="c">// apps/service/src/agent/loop.ts (요약)</span>
+<span class="k">const</span> messages = [{ role: <span class="s">"user"</span>, content: input }];
+<span class="k">for</span> (<span class="k">let</span> turn = 1; turn &lt;= maxTurns; turn++) {
+  <span class="k">const</span> msg = <span class="k">await</span> callModel({ system, tools, messages });
+  messages.push({ role: <span class="s">"assistant"</span>, content: msg.content });
+
+  <span class="k">if</span> (msg.stop_reason !== <span class="s">"tool_use"</span>) <span class="k">return</span> answer; <span class="c">// 끝</span>
+
+  <span class="k">const</span> results = [];
+  <span class="k">for</span> (<span class="k">const</span> call <span class="k">of</span> toolUses(msg))
+    results.push(<span class="k">await</span> toolbox.call(call.name, call.input));
+
+  messages.push({ role: <span class="s">"user"</span>, content: results }); <span class="c">// 다시 위로</span>
+}
+<span class="c">// 상한 도달 → 추측하지 않고 실패로 끝냄 (사람이 넘겨받음)</span></pre>
+    <div>
+      <p style="font-size:22px;margin-top:0">모델에게 묻고 → 도구를 달라면 실행해서 돌려주고 → <b>반복</b></p>
+      <p class="small muted">루프는 이벤트만 내보낸다. 웹 · CLI · 리플레이가 같은 이벤트를 그린다.</p>
+      <div class="chips">
+        <span class="chip">thinking</span><span class="chip">tool_call</span><span class="chip">tool_result</span>
+        <span class="chip warn">approval_required</span><span class="chip">message_delta</span><span class="chip">error</span><span class="chip">done</span>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    LangChain 같은 프레임워크를 일부러 안 씀. 루프 자체는 이게 전부라는 걸 보여 주려고.
+    ① 대화 기록 ② 모델 호출 ③ 응답 추가 ④ 도구 없으면 끝 ⑤ 도구 실행 ⑥ 승인 필요 알림 ⑦ 결과 돌려주기 ⑧ 상한.
+  </aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">5막 · ② 도구와 MCP</div>
+  <h2>도구 설명(description)이 곧 프롬프트</h2>
+  <div class="grid g2">
+    <div class="card"><h3 class="muted">v1</h3><pre class="code" style="font-size:16px">search_policies:
+  "정책을 검색합니다."</pre>
+      <p class="small muted" style="margin-top:12px">→ 질문 문장 그대로 한 번 검색하고 포기</p></div>
+    <div class="card green"><h3>v2</h3><pre class="code" style="font-size:15px;white-space:pre-wrap">search_policies:
+  언제 쓰나: 정책 질문을 받으면 가장 먼저.
+    조건이 여러 개면 조건별로 따로 검색.
+  쓰지 말 것: 섹션 키를 알면 get_policy_document.
+  검색 팁: 핵심 명사 2~4개. 없으면 동의어로 재검색
+    (미성년자/아동, 보호자/법정대리인)</pre></div>
+  </div>
+  <p class="foot">MCP = 도구를 "원격 서버"로 표준화. 토큰 권한에 따라 보이는 도구가 다르다 (read 5개 / propose 11개). <a class="demo-link" href="/#/internals">Internals 열기</a></p>
+  <aside class="notes">
+    TOOL_DESCRIPTIONS=v1 / v2 로 바꿔서 같은 질문의 도구 호출 패턴이 어떻게 달라지는지 비교 가능.
+    MCP: 우리 에이전트도, 외주 개발자의 Claude Code/Cursor 도 같은 서버에 붙는다.
+  </aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">5막 · ③ Human-in-the-loop</div>
+  <h2>위험한 권한은 아예 주지 않는다</h2>
+  <div class="grid g3">
+    <div class="card red" style="border-color:#f1b0b0;background:#fff5f5"><div class="icon">🚫</div><h3>정책 수정 도구 없음</h3><p>에이전트는 정책서를 직접 바꿀 수 없다. "변경안"만 만든다.</p></div>
+    <div class="card yellow"><div class="icon">✋</div><h3>requiresApproval</h3><p>도구 메타데이터에 표시. 이 도구는 승인 대기 상태만 만들고, 반영은 사람이 한다.</p></div>
+    <div class="card purple"><div class="icon">↩️</div><h3>수정요청 → 재제안</h3><p>사람이 이유를 적어 돌려보내면 에이전트가 그걸 읽고 다시 제안한다.</p></div>
+  </div>
+  <p class="foot">변경안은 기준 버전을 들고 온다 — 그 사이 정책이 바뀌었으면 거절(409). 사람 승인만이 새 버전을 만든다.</p>
+  <aside class="notes">
+    프롬프트로 "하지 마"라고 하는 것보다, 도구 자체를 안 주는 게 확실하다.
+    토큰 권한(read/propose)도 같은 원리.
+  </aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">5막 · ④ 관찰 가능성</div>
+  <h2>에이전트가 왜 그렇게 했는지 전부 남긴다</h2>
+  <div class="grid g2">
+    <div class="card blue"><h3>AgentRun 기록</h3><p>실행마다 이벤트 전체 · 사용한 도구 · 토큰 · 소요 시간 · 모델 · description 버전을 저장.</p></div>
+    <div class="card blue"><h3>/internals 타임라인</h3><p>생각 → 도구 호출 → 결과 → 답변을 시간순으로. 이상한 답이 나오면 여기서 원인을 찾는다.</p></div>
+    <div class="card"><h3>리플레이</h3><p>녹화한 실행을 원래 속도로 다시 재생. 발표 당일 네트워크 · API 장애 대비.</p></div>
+    <div class="card"><h3>같은 이벤트, 여러 화면</h3><p>웹 · CLI(<code>pnpm ask</code>) · 리플레이가 모두 같은 이벤트 스트림(SSE)을 그린다.</p></div>
+  </div>
+  <aside class="notes">
+    에이전트는 비결정적이라, 기록이 없으면 디버깅이 불가능. 프롬프트/description 개선도 기록을 보고 한다.
+  </aside>
+</section>
+
+<section class="slide">
+  <div class="kicker">5막 · ⑤ RAG</div>
+  <h2>검색을 파이프라인이 아니라 "도구"로</h2>
+  <table>
+    <tr><th></th><th>일반 RAG</th><th>이 프로젝트 (Agentic RAG)</th></tr>
+    <tr><td><b>검색 주체</b></td><td>코드가 질문마다 한 번</td><td><b>모델이</b> 필요할 때, 검색어를 바꿔 가며 여러 번</td></tr>
+    <tr><td><b>검색 방식</b></td><td>임베딩 벡터 유사도</td><td>키워드 + IDF (정책서 수십 섹션이면 충분)</td></tr>
+    <tr><td><b>검색 단위</b></td><td>임의 크기 청크</td><td>정책 <b>섹션</b> + 버전 → 정확한 출처 인용</td></tr>
+    <tr><td><b>근거가 없으면</b></td><td>그럴듯하게 답하기 쉬움</td><td>"근거 부족 / 문서 간 모순" 판정 → 티켓</td></tr>
+  </table>
+  <p class="foot">정책서가 수백 개로 늘면 검색 구현만 벡터 · 하이브리드로 교체. 도구 인터페이스는 그대로.</p>
+  <aside class="notes">Internals 타임라인에서 search_policies 가 여러 번 불리는 장면이 근거.</aside>
+</section>
+
+<!-- ======================= 마무리 ======================= -->
+<section class="slide">
+  <div class="kicker">마무리 · 리빌딩에 적용한다면</div>
+  <h2>다음 단계</h2>
+  <div class="grid g2">
+    <div class="card green">
+      <h3>바로 해볼 수 있는 것</h3>
+      <ul class="small" style="padding-left:1em">
+        <li>외주 계약 시 정책 MCP 의 <b>read 토큰</b>을 함께 제공</li>
+        <li>도메인별 <b>정책 담당자</b> 지정 — 승인하는 사람이 있어야 돈다</li>
+        <li>개발자 AI 도구에서도 공백 신고 (<code>report_policy_gap</code>)</li>
+      </ul>
+    </div>
+    <div class="card orange">
+      <h3>남은 과제</h3>
+      <ul class="small" style="padding-left:1em">
+        <li>실제 정책서를 외부 LLM 에 보내려면 <b>보안 검토</b> 필요 — 그래서 오늘은 가상 데이터</li>
+        <li>파일 저장소 → DB, 권한 · 감사 로그 강화</li>
+        <li>(선택) MR 을 정책 기준으로 검토하는 경로</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    욕심내지 말고 "이런 방향이면 반복을 막을 수 있지 않을까" 정도로 제안.
+  </aside>
+</section>
+
+<section class="slide cover">
+  <div class="kicker">정리</div>
+  <h1>정책이 사람 머리가 아니라<br />시스템에 남게</h1>
+  <p style="font-size:24px">개발자는 묻기만 하고 · 모르면 티켓이 되고 · 결정은 사람이, 문서화는 AI 가</p>
+  <p class="small" style="margin-top:36px">감사합니다 · 질문 받겠습니다</p>
+  <p class="small">코드와 문서: 저장소 <code>docs/00 ~ 07</code> · 직접 해보기 <code>docs/06-try-it.md</code></p>
+</section>
+
+</div>
+
+<div id="notes"></div>
+<div id="help">← → 이동 · N 노트 · F 전체화면</div>
+<div id="count"></div>
+<div id="bar"></div>
+
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  const stage = document.getElementById("stage");
+  const notesEl = document.getElementById("notes");
+  let i = Math.min(Math.max(parseInt(location.hash.slice(1), 10) - 1 || 0, 0), slides.length - 1);
+
+  function fit() {
+    const s = Math.min(innerWidth / 1280, innerHeight / 720) * 0.96;
+    stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+  }
+  function show(n) {
+    i = Math.min(Math.max(n, 0), slides.length - 1);
+    slides.forEach((el, k) => el.classList.toggle("active", k === i));
+    document.getElementById("count").textContent = `${i + 1} / ${slides.length}`;
+    document.getElementById("bar").style.width = `${((i + 1) / slides.length) * 100}%`;
+    const note = slides[i].querySelector(".notes");
+    notesEl.innerHTML = note ? `<b>노트</b>\n${note.innerHTML.trim()}` : "<b>노트</b>\n(없음)";
+    history.replaceState(null, "", `#${i + 1}`);
+  }
+  addEventListener("keydown", (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    else if (e.key === "Home") show(0);
+    else if (e.key === "End") show(slides.length - 1);
+    else if (e.key.toLowerCase() === "n") document.body.classList.toggle("show-notes");
+    else if (e.key.toLowerCase() === "f") {
+      if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen?.();
+    }
+  });
+  // 링크가 아닌 곳을 클릭하면 다음 장
+  stage.addEventListener("click", (e) => { if (!e.target.closest("a")) show(i + (e.clientX < innerWidth / 3 ? -1 : 1)); });
+  addEventListener("resize", fit);
+  fit(); show(i);
+</script>
+</body>
+</html>

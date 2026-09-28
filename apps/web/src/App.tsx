@@ -21,7 +21,9 @@ export function App() {
     <div className="app">
       <header className="topbar">
         <strong>📘 정책 에이전트</strong>
-        <nav>{nav.map(([id, label]) => <a key={id} href={`#/${id}`} className={page === id ? "active" : ""}>{label}</a>)}</nav>
+        <nav>{nav.map(([id, label]) => <a key={id} href={`#/${id}`} className={page === id ? "active" : ""}>{label}</a>)}
+          <a href="/slides.html" target="_blank" rel="noreferrer">발표 슬라이드 ↗</a>
+        </nav>
         {health && (
           <span className={`badge mode-${health.llmMode}`} title={health.model}>
             {health.llmMode === "replay" ? "📼 REPLAY 모드" : `LIVE · ${health.model}`}
