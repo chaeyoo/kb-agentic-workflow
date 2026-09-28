@@ -15,7 +15,12 @@ const MAX_ATTEMPTS = 3;
 let client: Anthropic | undefined;
 function getClient(): Anthropic {
   // 키는 ANTHROPIC_API_KEY 환경변수에서 SDK 가 알아서 읽는다.
-  client ??= new Anthropic({ maxRetries: 0 });
+  // 워크스페이스에 묶이지 않은 조직 키라면 요청마다 워크스페이스를 지정해야 한다 (ANTHROPIC_WORKSPACE_ID).
+  const workspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
+  client ??= new Anthropic({
+    maxRetries: 0,
+    ...(workspaceId && { defaultHeaders: { "anthropic-workspace-id": workspaceId } }),
+  });
   return client;
 }
 
