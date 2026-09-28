@@ -43,4 +43,5 @@ if (existsSync(webDist)) {
 const port = Number(process.env.PORT || process.env.SERVICE_PORT || 8787);
 serve({ fetch: app.fetch, port }, () => {
   console.log(`[service] http://localhost:${port}  (store: ${store.path}, llm: ${MODEL_LABEL})`);
+  console.log(`[service] ANTHROPIC_API_KEY ${process.env.ANTHROPIC_API_KEY ? "설정됨" : "없음"}, ANTHROPIC_WORKSPACE_ID ${process.env.ANTHROPIC_WORKSPACE_ID || "없음"}`);
 });

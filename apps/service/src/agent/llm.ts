@@ -72,6 +72,12 @@ export async function callModel(input: TurnInput, h: TurnHandlers): Promise<Anth
       stream.on("text", (delta) => h.onText(delta));
       return await stream.finalMessage();
     } catch (err) {
+      if (err instanceof Anthropic.BadRequestError && /not scoped to a workspace/.test(err.message)) {
+        // 조직 단위 키 + 워크스페이스 미지정. 무엇을 해야 하는지 에러 메시지에 적어준다.
+        throw new Error(process.env.ANTHROPIC_WORKSPACE_ID
+          ? `워크스페이스 헤더(${process.env.ANTHROPIC_WORKSPACE_ID})를 보냈는데도 거부됐습니다. Console 에서 워크스페이스 ID 를 다시 확인하세요. (${err.message})`
+          : "이 API 키는 워크스페이스에 묶이지 않은 조직 키입니다. .env 에 ANTHROPIC_WORKSPACE_ID=wrkspc_... 를 넣고 pnpm dev 를 재시작하거나, 워크스페이스 안에서 발급한 키를 쓰세요.");
+      }
       if (!isRetryable(err) || attempt >= MAX_ATTEMPTS) throw err;
       const wait = 1000 * 2 ** (attempt - 1);
       h.onRetry(`${(err as Error).message} — ${wait / 1000}초 후 재시도 (${attempt}/${MAX_ATTEMPTS - 1})`, attempt);
