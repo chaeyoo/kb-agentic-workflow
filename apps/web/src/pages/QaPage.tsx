@@ -37,6 +37,10 @@ export function QaPage({ runId }: { runId?: string }) {
   const items = buildItems(events);
   const last = items.at(-1);
   const answer = done ? done.answer : last?.kind === "text" ? last.text : "";
+  // 실패한 실행은 답변이 비어 있다 → 마지막 에러 메시지를 답변 자리에 보여준다
+  const failure = done?.stopReason === "error"
+    ? [...events].reverse().find((e) => e.type === "error" && !e.retryable)
+    : undefined;
   // 에이전트가 이번 실행에서 만든 티켓
   const createdTicket = events.flatMap((e) => {
     if (e.type !== "tool_result" || e.name !== "create_ticket" || !e.ok) return [];
@@ -73,7 +77,11 @@ export function QaPage({ runId }: { runId?: string }) {
               <strong>답변</strong> {done ? <VerdictBadge answer={done.answer} /> : <span className="badge running">작업 중…</span>}
               <a className="muted small" href={`#/internals/runs/${runId}`}>{runId}</a>
             </div>
-            {answer ? <RichText text={answer} /> : <div className="muted">정책 문서를 찾는 중…</div>}
+            {answer
+              ? <RichText text={answer} />
+              : failure?.type === "error"
+                ? <div className="error-text">⚠ 실행이 실패했습니다: {failure.message}</div>
+                : <div className="muted">정책 문서를 찾는 중…</div>}
             {createdTicket && <div className="notice">🎫 에이전트가 정책 공백 티켓 <a href={`#/board/${createdTicket}`}>{createdTicket}</a> 을 만들어 담당자에게 확인을 요청했습니다.</div>}
             {done && verdict && verdict !== "ok" && !createdTicket && (
               manualTicket

@@ -44,7 +44,7 @@ claude mcp add --transport http kb-policy http://localhost:8788/mcp \
   --header "Authorization: Bearer dev-read-token"
 ```
 
-`dev-read-token` 은 읽기 전용 토큰이라 조회 도구만 보입니다. 자세한 내용은 `docs/02-mcp.md` (작성 예정).
+`dev-read-token` 은 읽기 전용 토큰이라 조회 도구만 보입니다. 자세한 내용은 [docs/02-mcp.md](docs/02-mcp.md).
 
 ## 키 없이 / 오프라인으로 시연하기
 

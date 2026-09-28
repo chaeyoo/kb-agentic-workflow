@@ -8,19 +8,24 @@ interface DocumentView { document: PolicyDocument; version: number; sections: Po
 
 export function PoliciesPage({ documentId, target }: { documentId?: string; target?: string }) {
   const [docs, setDocs] = useState<DocumentListItem[]>([]);
-  const [version, setVersion] = useState<number>();
+  // 버전 선택은 문서별로 기억한다. 문서를 바꾸는 순간 이전 문서의 버전으로 요청하지 않게.
+  const [picked, setPicked] = useState<{ docId?: string; version: number }>();
   const [view, setView] = useState<DocumentView>();
   const [pending, setPending] = useState<PolicyChangeProposal[]>([]);
   const [targetKey, targetVersion] = (target ?? "").split("@");
   const docId = documentId ?? docs[0]?.id;
+  const version = picked?.docId === docId ? picked.version : undefined;
+  const setVersion = (v: number) => setPicked({ docId, version: v });
 
   useEffect(() => {
     api.get<DocumentListItem[]>("/policies").then(setDocs);
     api.get<PolicyChangeProposal[]>("/proposals?status=pending").then(setPending);
   }, [documentId]);
-  useEffect(() => setVersion(undefined), [docId]);
   useEffect(() => {
-    if (docId) api.get<DocumentView>(`/policies/${docId}${version ? `?version=${version}` : ""}`).then(setView);
+    if (!docId) return;
+    let alive = true; // 늦게 도착한 이전 요청의 응답은 버린다
+    api.get<DocumentView>(`/policies/${docId}${version ? `?version=${version}` : ""}`).then((v) => { if (alive) setView(v); });
+    return () => { alive = false; };
   }, [docId, version]);
   useEffect(() => {
     if (targetKey && view) document.getElementById(targetKey)?.scrollIntoView({ behavior: "smooth", block: "center" });

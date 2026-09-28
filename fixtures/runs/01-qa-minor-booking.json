@@ -1,7 +1,7 @@
 {
   "name": "01-qa-minor-booking",
   "note": "샘플: 실제 모델이 아니라 스크립트로 만든 가짜 LLM 응답을 녹화한 것. 리플레이 기능 확인용이며, 발표 전 실제 키로 같은 이름의 fixture 를 다시 녹화해 덮어쓰세요 (docs/04-observability.md).",
-  "recordedAt": "2026-09-27T13:29:09.522Z",
+  "recordedAt": "2026-09-28T00:27:17.065Z",
   "model": "scripted-sample",
   "trigger": {
     "kind": "cli"
@@ -15,7 +15,8 @@
       "input": {
         "query": "14세 미만 예약"
       },
-      "t": 210
+      "turn": 1,
+      "t": 230
     },
     {
       "type": "tool_result",
@@ -24,8 +25,8 @@
       "ok": true,
       "summary": "8건: guardian-consent.minor-signup@1, membership.age@2, checkup-booking.who@1 …",
       "output": "{\n  \"summary\": \"8건: guardian-consent.minor-signup@1, membership.age@2, checkup-booking.who@1 …\",\n  \"hits\": [\n    {\n      \"sectionId\": \"guardian-consent.minor-signup@1\",\n      \"sectionKey\": \"guardian-consent.minor-signup\",\n      \"documentId\": \"guardian-consent\",\n      \"documentTitle\": \"보호자 대리 동의 정책\",\n      \"heading\": \"만 14세 미만 가입 동의\",\n      \"version\": 1,\n      \"snippet\": \"- 만 14세 미만 아동은 법정대리인이 동의하면 회원으로 가입할 수 있다. - 법정대리인 동의는 법정대리인의 휴대폰 본인인증으로 받는다.\"\n    },\n    {\n      \"sectionId\": \"membership.age@2\",\n      \"sectionKey\": \"membership.age\",\n      \"documentId\": \"membership\",\n      \"documentTitle\": \"회원 자격 정책\",\n      \"heading\": \"가입 연령\",\n      \"version\": 2,\n      \"snippet\": \"- 만 14세 이상인 사람만 본인 명의로 회원 가입할 수 있다. - 만 14세 미만은 회원 가입이 불가하다. - 연령은 본인인증 결과의 생년월일을 기준으로 가입…\"\n    },\n    {\n      \"sectionId\": \"checkup-booking.who@1\",\n      \"sectionKey\": \"checkup-booking.who\",\n      \"documentId\": \"checkup-booking\",\n      \"documentTitle\": \"검진 예약 정책\",\n      \"heading\": \"예약 주체\",\n      \"version\": 1,\n      \"snippet\": \"- 로그인한 회원은 본인의 검진을 예약할 수 있다. - '가족 연결'이 완료된 가족의 검진은 대리 예약할 수 있다. 대리 예약 시 예약자와 수검자를 구분해 저장한…\"\n    },\n    {\n      \"sectionId\": \"checkup-booking.noshow@1\",\n      \"sectionKey\": \"checkup-booking.noshow\",\n      \"documentId\": \"checkup-booking\",\n      \"documentTitle\": \"검진 예약 정책\",\n      \"heading\": \"노쇼 제재\",\n      \"version\": 1,\n      \"snippet\": \"- 예약한 검진에 사전 취소 없이 방문하지 않으면 노쇼 1회로 기록한다. - 최근 12개월 노쇼가 3회가 되면 그 날부터 30일 동안 신규 예약이 제한된다.\"\n    },\n    {\n      \"sectionId\": \"guardian-consent.teen-result@1\",\n      \"sectionKey\": \"guardian-consent.teen-result\",\n      \"documentId\": \"guardian-consent\",\n      \"documentTitle\": \"보호자 대리 동의 정책\",\n      \"heading\": \"청소년 결과 열람 동의\",\n      \"version\": 1,\n      \"snippet\": \"- 만 14세 이상 만 19세 미만 자녀의 검진 결과를 보호자가 열람하려면 자녀 본인의 동의가 필요하다. - 자녀는 앱에서 보호자 열람 동의를 언제든 철회할 수…\"\n    },\n    {\n      \"sectionId\": \"notification.minor@1\",\n      \"sectionKey\": \"notification.minor\",\n      \"documentId\": \"notification\",\n      \"documentTitle\": \"알림 발송 규칙\",\n      \"heading\": \"미성년자 알림\",\n      \"version\": 1,\n      \"snippet\": \"- 만 14세 미만 회원에게는 마케팅 알림을 보내지 않는다.\"\n    },\n    {\n      \"sectionId\": \"checkup-booking.window@1\",\n      \"sectionKey\": \"checkup-booking.window\",\n      \"documentId\": \"checkup-booking\",\n      \"documentTitle\": \"검진 예약 정책\",\n      \"heading\": \"예약 가능 기간\",\n      \"version\": 1,\n      \"snippet\": \"- 검진일 기준 3일 전부터 90일 이내의 날짜만 예약할 수 있다. - 검진기관이 휴무로 등록한 날짜는 선택할 수 없다.\"\n    },\n    {\n      \"sectionId\": \"checkup-booking.questionnaire@1\",\n      \"sectionKey\": \"checkup-booking.questionnaire\",\n      \"documentId\": \"checkup-booking\",\n      \"documentTitle\": \"검진 예약 정책\",\n      \"heading\": \"사전 문진\",\n      \"version\": 1,\n      \"snippet\": \"- 예약이 확정되면 사전 문진표 작성을 요청한다. - 문진표는 검진일 전날 23:59까지 앱에서 작성할 수 있다. 미작성 시 검진 당일 현장에서 작성한다.\"\n    }\n  ]\n}",
-      "durationMs": 90,
-      "t": 300
+      "durationMs": 74,
+      "t": 304
     },
     {
       "type": "tool_call",
@@ -34,7 +35,8 @@
       "input": {
         "sectionKey": "membership.age"
       },
-      "t": 311
+      "turn": 2,
+      "t": 319
     },
     {
       "type": "tool_result",
@@ -43,8 +45,8 @@
       "ok": true,
       "summary": "membership.age@2 가입 연령",
       "output": "{\n  \"summary\": \"membership.age@2 가입 연령\",\n  \"section\": {\n    \"sectionId\": \"membership.age@2\",\n    \"sectionKey\": \"membership.age\",\n    \"heading\": \"가입 연령\",\n    \"version\": 2,\n    \"status\": \"active\",\n    \"body\": \"- 만 14세 이상인 사람만 본인 명의로 회원 가입할 수 있다.\\n- 만 14세 미만은 회원 가입이 불가하다.\\n- 연령은 본인인증 결과의 생년월일을 기준으로 가입 신청일에 계산한다.\",\n    \"changedAt\": \"2026-06-15T09:00:00.000Z\",\n    \"changeReason\": \"청소년 회원 유입을 위해 가입 가능 연령을 만 14세로 낮춤 (티켓 T-3, 법무 검토 완료)\"\n  }\n}",
-      "durationMs": 14,
-      "t": 325
+      "durationMs": 13,
+      "t": 332
     },
     {
       "type": "tool_call",
@@ -53,7 +55,8 @@
       "input": {
         "sectionKey": "guardian-consent.minor-signup"
       },
-      "t": 325
+      "turn": 2,
+      "t": 332
     },
     {
       "type": "tool_result",
@@ -62,15 +65,16 @@
       "ok": true,
       "summary": "guardian-consent.minor-signup@1 만 14세 미만 가입 동의",
       "output": "{\n  \"summary\": \"guardian-consent.minor-signup@1 만 14세 미만 가입 동의\",\n  \"section\": {\n    \"sectionId\": \"guardian-consent.minor-signup@1\",\n    \"sectionKey\": \"guardian-consent.minor-signup\",\n    \"heading\": \"만 14세 미만 가입 동의\",\n    \"version\": 1,\n    \"status\": \"active\",\n    \"body\": \"- 만 14세 미만 아동은 법정대리인이 동의하면 회원으로 가입할 수 있다.\\n- 법정대리인 동의는 법정대리인의 휴대폰 본인인증으로 받는다.\",\n    \"changedAt\": \"2026-03-02T09:00:00.000Z\",\n    \"changeReason\": \"최초 작성\"\n  }\n}",
-      "durationMs": 15,
-      "t": 340
+      "durationMs": 14,
+      "t": 346
     },
     {
       "type": "tool_call",
       "id": "tu_3_0",
       "name": "list_open_questions",
       "input": {},
-      "t": 349
+      "turn": 3,
+      "t": 355
     },
     {
       "type": "tool_result",
@@ -79,8 +83,8 @@
       "ok": true,
       "summary": "미해결 정책 공백 없음",
       "output": "{\n  \"summary\": \"미해결 정책 공백 없음\",\n  \"openQuestions\": []\n}",
-      "durationMs": 13,
-      "t": 362
+      "durationMs": 9,
+      "t": 364
     },
     {
       "type": "tool_call",
@@ -96,7 +100,8 @@
           "checkup-booking.who"
         ]
       },
-      "t": 372
+      "turn": 4,
+      "t": 371
     },
     {
       "type": "tool_result",
@@ -105,89 +110,89 @@
       "ok": true,
       "summary": "T-5 생성 → 담당 한서윤",
       "output": "{\n  \"summary\": \"T-5 생성 → 담당 한서윤\",\n  \"ticketId\": \"T-5\",\n  \"ticket\": {\n    \"ticketId\": \"T-5\",\n    \"title\": \"만 14세 미만 회원 가입 허용 여부 (문서 간 모순)\",\n    \"type\": \"policy_gap\",\n    \"status\": \"todo\",\n    \"assignee\": \"한서윤\",\n    \"linkedSectionKeys\": [\n      \"membership.age\",\n      \"guardian-consent.minor-signup\",\n      \"checkup-booking.who\"\n    ],\n    \"description\": \"질문: 만 14세 미만이 검진 예약 가능? [[membership.age@2]] 는 가입 불가, [[guardian-consent.minor-signup@1]] 는 보호자 동의 시 가능. 선택지 A/B\"\n  }\n}",
-      "durationMs": 18,
-      "t": 390
+      "durationMs": 31,
+      "t": 402
     },
     {
       "type": "message_delta",
       "text": "정책서끼리 충돌",
-      "t": 396
+      "t": 409
     },
     {
       "type": "message_delta",
       "text": "합니다.\n- 가",
-      "t": 397
+      "t": 410
     },
     {
       "type": "message_delta",
       "text": "입 불가 [[m",
-      "t": 397
+      "t": 410
     },
     {
       "type": "message_delta",
       "text": "embershi",
-      "t": 397
+      "t": 410
     },
     {
       "type": "message_delta",
       "text": "p.age@2]",
-      "t": 397
+      "t": 410
     },
     {
       "type": "message_delta",
       "text": "]\n- 보호자 ",
-      "t": 397
+      "t": 410
     },
     {
       "type": "message_delta",
       "text": "동의 시 가능 ",
-      "t": 397
+      "t": 411
     },
     {
       "type": "message_delta",
       "text": "[[guardi",
-      "t": 397
+      "t": 411
     },
     {
       "type": "message_delta",
       "text": "an-conse",
-      "t": 397
+      "t": 411
     },
     {
       "type": "message_delta",
       "text": "nt.minor",
-      "t": 397
+      "t": 411
     },
     {
       "type": "message_delta",
       "text": "-signup@",
-      "t": 397
+      "t": 411
     },
     {
       "type": "message_delta",
       "text": "1]]\n확인 요",
-      "t": 397
+      "t": 411
     },
     {
       "type": "message_delta",
       "text": "청: T-5 (",
-      "t": 397
+      "t": 412
     },
     {
       "type": "message_delta",
       "text": "한서윤)\n판정:",
-      "t": 398
+      "t": 412
     },
     {
       "type": "message_delta",
       "text": " 문서 간 모순",
-      "t": 398
+      "t": 412
     },
     {
       "type": "done",
       "answer": "정책서끼리 충돌합니다.\n- 가입 불가 [[membership.age@2]]\n- 보호자 동의 시 가능 [[guardian-consent.minor-signup@1]]\n확인 요청: T-5 (한서윤)\n판정: 문서 간 모순",
       "stopReason": "end_turn",
-      "t": 399
+      "t": 413
     }
   ]
 }

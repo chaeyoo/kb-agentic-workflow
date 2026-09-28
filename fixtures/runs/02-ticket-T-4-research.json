@@ -1,7 +1,7 @@
 {
   "name": "02-ticket-T-4-research",
   "note": "샘플: 실제 모델이 아니라 스크립트로 만든 가짜 LLM 응답을 녹화한 것. 리플레이 기능 확인용이며, 발표 전 실제 키로 같은 이름의 fixture 를 다시 녹화해 덮어쓰세요 (docs/04-observability.md).",
-  "recordedAt": "2026-09-27T13:29:10.267Z",
+  "recordedAt": "2026-09-28T00:27:17.711Z",
   "model": "scripted-sample",
   "trigger": {
     "kind": "ticket",
@@ -16,7 +16,8 @@
       "input": {
         "ticketId": "T-4"
       },
-      "t": 22
+      "turn": 1,
+      "t": 36
     },
     {
       "type": "tool_result",
@@ -25,8 +26,8 @@
       "ok": true,
       "summary": "T-4 [todo] 보호자용 자녀 검진 결과 열람 화면 (코멘트 0)",
       "output": "{\n  \"summary\": \"T-4 [todo] 보호자용 자녀 검진 결과 열람 화면 (코멘트 0)\",\n  \"ticket\": {\n    \"ticketId\": \"T-4\",\n    \"title\": \"보호자용 자녀 검진 결과 열람 화면\",\n    \"type\": \"task\",\n    \"status\": \"todo\",\n    \"assignee\": \"Agent\",\n    \"linkedSectionKeys\": [\n      \"result-access.guardian\"\n    ],\n    \"description\": \"보호자가 가족 연결된 자녀의 검진 결과를 볼 수 있는 화면을 만든다. 어떤 자녀의 결과를 어떤 조건에서 보여줘야 하는지 정책 확인이 필요하다.\"\n  },\n  \"linkedSections\": [\n    {\n      \"key\": \"result-access.guardian\",\n      \"heading\": \"보호자 열람\",\n      \"version\": 1,\n      \"documentId\": \"result-access\",\n      \"documentTitle\": \"검진 결과 열람 권한 정책\"\n    }\n  ],\n  \"comments\": [],\n  \"proposals\": []\n}",
-      "durationMs": 7,
-      "t": 29
+      "durationMs": 9,
+      "t": 45
     },
     {
       "type": "tool_call",
@@ -36,7 +37,8 @@
         "ticketId": "T-4",
         "status": "in_progress"
       },
-      "t": 33
+      "turn": 2,
+      "t": 48
     },
     {
       "type": "tool_result",
@@ -46,7 +48,7 @@
       "summary": "T-4 → in_progress",
       "output": "{\n  \"summary\": \"T-4 → in_progress\",\n  \"ticketId\": \"T-4\",\n  \"status\": \"in_progress\"\n}",
       "durationMs": 9,
-      "t": 42
+      "t": 57
     },
     {
       "type": "tool_call",
@@ -55,7 +57,8 @@
       "input": {
         "query": "보호자 열람 동의"
       },
-      "t": 46
+      "turn": 3,
+      "t": 60
     },
     {
       "type": "tool_result",
@@ -64,8 +67,8 @@
       "ok": true,
       "summary": "8건: guardian-consent.teen-result@1, result-access.guardian@1, guardian-consent.minor-signup@1 …",
       "output": "{\n  \"summary\": \"8건: guardian-consent.teen-result@1, result-access.guardian@1, guardian-consent.minor-signup@1 …\",\n  \"hits\": [\n    {\n      \"sectionId\": \"guardian-consent.teen-result@1\",\n      \"sectionKey\": \"guardian-consent.teen-result\",\n      \"documentId\": \"guardian-consent\",\n      \"documentTitle\": \"보호자 대리 동의 정책\",\n      \"heading\": \"청소년 결과 열람 동의\",\n      \"version\": 1,\n      \"snippet\": \"…만 14세 이상 만 19세 미만 자녀의 검진 결과를 보호자가 열람하려면 자녀 본인의 동의가 필요하다. - 자녀는 앱에서 보호자 열람 동의를 언제든 철회할 수 있…\"\n    },\n    {\n      \"sectionId\": \"result-access.guardian@1\",\n      \"sectionKey\": \"result-access.guardian\",\n      \"documentId\": \"result-access\",\n      \"documentTitle\": \"검진 결과 열람 권한 정책\",\n      \"heading\": \"보호자 열람\",\n      \"version\": 1,\n      \"snippet\": \"- 만 19세 미만 자녀의 검진 결과는 법정대리인(보호자)이 별도 동의 없이 열람할 수 있다. - 보호자 열람은 '가족 연결'로 법정대리인 관계가 확인된 경우에만…\"\n    },\n    {\n      \"sectionId\": \"guardian-consent.minor-signup@1\",\n      \"sectionKey\": \"guardian-consent.minor-signup\",\n      \"documentId\": \"guardian-consent\",\n      \"documentTitle\": \"보호자 대리 동의 정책\",\n      \"heading\": \"만 14세 미만 가입 동의\",\n      \"version\": 1,\n      \"snippet\": \"- 만 14세 미만 아동은 법정대리인이 동의하면 회원으로 가입할 수 있다. - 법정대리인 동의는 법정대리인의 휴대폰 본인인증으로 받는다.\"\n    },\n    {\n      \"sectionId\": \"guardian-consent.consent-expiry@1\",\n      \"sectionKey\": \"guardian-consent.consent-expiry\",\n      \"documentId\": \"guardian-consent\",\n      \"documentTitle\": \"보호자 대리 동의 정책\",\n      \"heading\": \"동의 유효기간\",\n      \"version\": 1,\n      \"snippet\": \"- 법정대리인 동의는 아동이 만 14세가 되는 날 효력을 잃는다. - 만 14세가 된 회원은 다음 로그인 시 본인 명의로 약관에 다시 동의해야 한다.\"\n    },\n    {\n      \"sectionId\": \"guardian-consent.definition@1\",\n      \"sectionKey\": \"guardian-consent.definition\",\n      \"documentId\": \"guardian-consent\",\n      \"documentTitle\": \"보호자 대리 동의 정책\",\n      \"heading\": \"법정대리인 정의\",\n      \"version\": 1,\n      \"snippet\": \"- 법정대리인은 친권자 또는 후견인을 말한다. - 앱에서는 '가족 연결' 시 가족관계증명서로 관계를 확인한 친권자·후견인을 법정대리인으로 본다.\"\n    },\n    {\n      \"sectionId\": \"result-access.sensitive@1\",\n      \"sectionKey\": \"result-access.sensitive\",\n      \"documentId\": \"result-access\",\n      \"documentTitle\": \"검진 결과 열람 권한 정책\",\n      \"heading\": \"민감 항목\",\n      \"version\": 1,\n      \"snippet\": \"…상담을 마친 뒤에만 앱에 공개한다. - 민감 항목은 보호자 열람 대상에서 제외한다.\"\n    },\n    {\n      \"sectionId\": \"result-access.owner@1\",\n      \"sectionKey\": \"result-access.owner\",\n      \"documentId\": \"result-access\",\n      \"documentTitle\": \"검진 결과 열람 권한 정책\",\n      \"heading\": \"본인 열람\",\n      \"version\": 1,\n      \"snippet\": \"…본인은 검진기관이 결과를 등록한 즉시 앱에서 결과를 열람할 수 있다. - 결과 열람에는 최근 1년 이내 본인인증이 필요하다.\"\n    },\n    {\n      \"sectionId\": \"result-access.retention@1\",\n      \"sectionKey\": \"result-access.retention\",\n      \"documentId\": \"result-access\",\n      \"documentTitle\": \"검진 결과 열람 권한 정책\",\n      \"heading\": \"결과 보관 기간\",\n      \"version\": 1,\n      \"snippet\": \"- 검진 결과는 등록일로부터 5년 동안 앱에서 열람할 수 있다. - 5년이 지난 결과는 목록에서 숨기고, 고객센터 요청 시 사본을 발급한다.\"\n    }\n  ]\n}",
-      "durationMs": 6,
-      "t": 52
+      "durationMs": 8,
+      "t": 68
     },
     {
       "type": "tool_call",
@@ -74,7 +77,8 @@
       "input": {
         "sectionKey": "guardian-consent.teen-result"
       },
-      "t": 58
+      "turn": 4,
+      "t": 74
     },
     {
       "type": "tool_result",
@@ -84,14 +88,15 @@
       "summary": "guardian-consent.teen-result@1 청소년 결과 열람 동의",
       "output": "{\n  \"summary\": \"guardian-consent.teen-result@1 청소년 결과 열람 동의\",\n  \"section\": {\n    \"sectionId\": \"guardian-consent.teen-result@1\",\n    \"sectionKey\": \"guardian-consent.teen-result\",\n    \"heading\": \"청소년 결과 열람 동의\",\n    \"version\": 1,\n    \"status\": \"active\",\n    \"body\": \"- 만 14세 이상 만 19세 미만 자녀의 검진 결과를 보호자가 열람하려면 자녀 본인의 동의가 필요하다.\\n- 자녀는 앱에서 보호자 열람 동의를 언제든 철회할 수 있다.\",\n    \"changedAt\": \"2026-03-02T09:00:00.000Z\",\n    \"changeReason\": \"최초 작성\"\n  }\n}",
       "durationMs": 7,
-      "t": 65
+      "t": 81
     },
     {
       "type": "tool_call",
       "id": "tu_10_0",
       "name": "list_open_questions",
       "input": {},
-      "t": 69
+      "turn": 5,
+      "t": 85
     },
     {
       "type": "tool_result",
@@ -100,8 +105,8 @@
       "ok": true,
       "summary": "미해결 1건: T-5",
       "output": "{\n  \"summary\": \"미해결 1건: T-5\",\n  \"openQuestions\": [\n    {\n      \"ticketId\": \"T-5\",\n      \"title\": \"만 14세 미만 회원 가입 허용 여부 (문서 간 모순)\",\n      \"type\": \"policy_gap\",\n      \"status\": \"todo\",\n      \"assignee\": \"한서윤\",\n      \"linkedSectionKeys\": [\n        \"membership.age\",\n        \"guardian-consent.minor-signup\",\n        \"checkup-booking.who\"\n      ],\n      \"description\": \"질문: 만 14세 미만이 검진 예약 가능? [[membership.age@2]] 는 가입 불가, [[guardian-consent.minor-signup@1]] 는 보호자 동의 시 가능. 선택지 A/B\"\n    }\n  ]\n}",
-      "durationMs": 5,
-      "t": 74
+      "durationMs": 7,
+      "t": 92
     },
     {
       "type": "tool_call",
@@ -116,7 +121,8 @@
           "guardian-consent.teen-result"
         ]
       },
-      "t": 78
+      "turn": 6,
+      "t": 97
     },
     {
       "type": "tool_result",
@@ -125,8 +131,8 @@
       "ok": true,
       "summary": "T-6 생성 → 담당 문가람",
       "output": "{\n  \"summary\": \"T-6 생성 → 담당 문가람\",\n  \"ticketId\": \"T-6\",\n  \"ticket\": {\n    \"ticketId\": \"T-6\",\n    \"title\": \"청소년 자녀 결과의 보호자 열람 시 자녀 동의 필요 여부\",\n    \"type\": \"policy_gap\",\n    \"status\": \"todo\",\n    \"assignee\": \"문가람\",\n    \"linkedSectionKeys\": [\n      \"result-access.guardian\",\n      \"guardian-consent.teen-result\"\n    ],\n    \"description\": \"[[result-access.guardian@1]] vs [[guardian-consent.teen-result@1]] 충돌\"\n  }\n}",
-      "durationMs": 6,
-      "t": 84
+      "durationMs": 8,
+      "t": 105
     },
     {
       "type": "tool_call",
@@ -136,7 +142,8 @@
         "ticketId": "T-4",
         "body": "- 민감 항목 제외 [[result-access.sensitive@1]]\n- 청소년 동의 여부는 정책 공백 티켓으로 확인 요청"
       },
-      "t": 87
+      "turn": 7,
+      "t": 108
     },
     {
       "type": "tool_result",
@@ -145,8 +152,8 @@
       "ok": true,
       "summary": "T-4 에 코멘트 C-3",
       "output": "{\n  \"summary\": \"T-4 에 코멘트 C-3\",\n  \"commentId\": \"C-3\"\n}",
-      "durationMs": 7,
-      "t": 94
+      "durationMs": 8,
+      "t": 116
     },
     {
       "type": "tool_call",
@@ -159,7 +166,8 @@
           "result-access.sensitive"
         ]
       },
-      "t": 94
+      "turn": 7,
+      "t": 116
     },
     {
       "type": "tool_result",
@@ -168,8 +176,8 @@
       "ok": true,
       "summary": "T-4 연결 섹션 3개",
       "output": "{\n  \"summary\": \"T-4 연결 섹션 3개\",\n  \"linkedSectionKeys\": [\n    \"result-access.guardian\",\n    \"guardian-consent.teen-result\",\n    \"result-access.sensitive\"\n  ]\n}",
-      "durationMs": 6,
-      "t": 100
+      "durationMs": 9,
+      "t": 125
     },
     {
       "type": "tool_call",
@@ -179,7 +187,8 @@
         "ticketId": "T-4",
         "status": "in_review"
       },
-      "t": 103
+      "turn": 8,
+      "t": 130
     },
     {
       "type": "tool_result",
@@ -189,38 +198,38 @@
       "summary": "T-4 → in_review",
       "output": "{\n  \"summary\": \"T-4 → in_review\",\n  \"ticketId\": \"T-4\",\n  \"status\": \"in_review\"\n}",
       "durationMs": 6,
-      "t": 109
+      "t": 136
     },
     {
       "type": "message_delta",
       "text": "T-4 조사 완",
-      "t": 112
+      "t": 139
     },
     {
       "type": "message_delta",
       "text": "료, 모순은 별",
-      "t": 112
+      "t": 139
     },
     {
       "type": "message_delta",
       "text": "도 티켓으로 올",
-      "t": 112
+      "t": 139
     },
     {
       "type": "message_delta",
       "text": "림.\n판정: 문",
-      "t": 112
+      "t": 139
     },
     {
       "type": "message_delta",
       "text": "서 간 모순",
-      "t": 112
+      "t": 139
     },
     {
       "type": "done",
       "answer": "T-4 조사 완료, 모순은 별도 티켓으로 올림.\n판정: 문서 간 모순",
       "stopReason": "end_turn",
-      "t": 113
+      "t": 140
     }
   ]
 }
