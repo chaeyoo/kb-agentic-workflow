@@ -36,6 +36,7 @@ pnpm dev
 | 증상 | 원인 / 해결 |
 |---|---|
 | `ANTHROPIC_API_KEY 가 없습니다` | `.env` 확인. 또는 `LLM_MODE=replay` |
+| 400 `This API key is not scoped to a workspace` | 조직 단위 키다. `.env` 에 `ANTHROPIC_WORKSPACE_ID=wrkspc_...` 를 넣거나, 워크스페이스 안에서 발급한 키로 바꾼다 |
 | 에이전트가 `MCP 서버에 연결할 수 없습니다` | mcp 서버가 안 떴거나 `MCP_URL` 이 틀림. `pnpm dev` 로그 확인 |
 | 모든 도구 호출이 401 | `MCP_AGENT_TOKEN` 이 `MCP_TOKENS` 목록에 없음 |
 | 리플레이에서 "fixture 가 없습니다" | 녹화와 다른 질문/순서. `pnpm seed:reset` 후 녹화 순서대로 |
