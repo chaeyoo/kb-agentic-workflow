@@ -88,7 +88,7 @@ export interface Comment {
 export type AgentEvent =
   | { type: "thinking"; text: string }
   | { type: "message_delta"; text: string }
-  | { type: "tool_call"; id: string; name: string; input: unknown }
+  | { type: "tool_call"; id: string; name: string; input: unknown; turn?: number } // turn: 몇 번째 모델 턴에서 요청했나 (병렬 호출 묶음 = 같은 turn)
   | { type: "tool_result"; id: string; name: string; ok: boolean; summary: string; output: string; durationMs: number }
   | { type: "approval_required"; toolName: string; proposalId?: string; message: string }
   | { type: "error"; message: string; retryable?: boolean }

@@ -14,8 +14,22 @@ export type RunListener = (event: RecordedEvent) => void;
 
 export class AgentRunner {
   private live = new Map<string, EventEmitter>();
+  /** 실행 중에 수정요청이 들어온 티켓: 지금 실행이 끝나면 다시 맡긴다 */
+  private rerunAfter = new Set<string>();
 
-  constructor(private store: FileStore) {}
+  constructor(private store: FileStore) {
+    // 서버가 실행 도중 죽었으면 그 실행은 running 인 채로 남는다. 끝난 것으로 정리해야
+    // 화면이 done 을 기다리며 무한히 재연결하지 않는다.
+    let orphaned = 0;
+    for (const run of store.data.runs.filter((r) => r.status === "running")) {
+      const t = run.events.at(-1)?.t ?? 0;
+      run.events.push({ type: "error", message: "서버가 재시작되어 실행이 중단되었습니다", t });
+      run.events.push({ type: "done", answer: "", stopReason: "error", t });
+      run.status = "failed";
+      orphaned++;
+    }
+    if (orphaned) store.save();
+  }
 
   /** 실행을 시작하고 runId 를 바로 돌려준다. 실행은 백그라운드에서 계속된다. */
   start(input: string, trigger: AgentRun["trigger"]): { runId: string; finished: Promise<AgentRun> } {
@@ -61,6 +75,7 @@ export class AgentRunner {
         this.store.save();
         bus.emit("end");
         this.live.delete(run.id);
+        if (trigger.kind === "ticket" && this.rerunAfter.delete(trigger.ticketId)) this.requestTicketRun(trigger.ticketId);
       }
       return run;
     })();
@@ -71,6 +86,17 @@ export class AgentRunner {
   /** 티켓 작업 실행. 담당자를 Agent 로 바꾸면 호출된다. */
   startTicketRun(ticketId: string): string {
     return this.start(ticketTaskPrompt(ticketId), { kind: "ticket", ticketId }).runId;
+  }
+
+  /**
+   * 티켓을 에이전트에게 (다시) 맡긴다. 이미 실행 중이면 그 실행이 끝난 뒤에 시작한다.
+   * 예: request_approval 직후 에이전트가 마무리 답변을 쓰는 몇 초 사이에 사람이 수정요청한 경우.
+   */
+  requestTicketRun(ticketId: string): void {
+    const ticket = this.store.data.tickets.find((t) => t.id === ticketId);
+    if (ticket?.assignee?.kind !== "agent") return;
+    if (this.isTicketRunning(ticketId)) this.rerunAfter.add(ticketId);
+    else this.startTicketRun(ticketId);
   }
 
   isTicketRunning(ticketId: string): boolean {

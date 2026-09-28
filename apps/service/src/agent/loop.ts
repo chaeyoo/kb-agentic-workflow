@@ -68,7 +68,7 @@ export async function runAgentLoop(opts: LoopOptions): Promise<LoopResult> {
     // ⑤ 모델이 요청한 도구를 실행한다. 실제 실행은 MCP 서버가 한다 — 여기서는 호출만.
     const results: Anthropic.ToolResultBlockParam[] = [];
     for (const call of toolUses) {
-      emit({ type: "tool_call", id: call.id, name: call.name, input: call.input });
+      emit({ type: "tool_call", id: call.id, name: call.name, input: call.input, turn });
       const started = Date.now();
       const result = await toolbox.call(call.name, call.input);
       emit({

@@ -54,9 +54,9 @@ export function proposalRoutes(proposals: ProposalService, board: BoardService, 
       if (action === "reject") board.updateTicket(ticketId, { status: "in_review" });
       if (action === "request_changes") {
         board.updateTicket(ticketId, { status: "in_progress" });
-        // 에이전트 담당 티켓이면 피드백을 반영해 다시 제안하도록 바로 맡긴다 (HITL ② 의 되돌림 루프)
-        const t = board.getTicket(ticketId);
-        if (t.assignee?.kind === "agent" && !runner.isTicketRunning(t.id)) runner.startTicketRun(t.id);
+        // 에이전트 담당 티켓이면 피드백을 반영해 다시 제안하도록 맡긴다 (HITL ② 의 되돌림 루프).
+        // 직전 실행이 아직 마무리 중이면 끝난 뒤에 시작된다.
+        runner.requestTicketRun(ticketId);
       }
     }
     return c.json({ proposal, section });

@@ -99,7 +99,7 @@ for await (const chunk of res.body) {
     const data = block.split("\n").filter((l) => l.startsWith("data: ")).map((l) => l.slice(6)).join("\n");
     if (!data) continue;
     if (event === "run") runId = (JSON.parse(data) as { runId: string }).runId;
-    else render(JSON.parse(data) as RecordedEvent);
+    else if (event !== "end") render(JSON.parse(data) as RecordedEvent);
   }
 }
 

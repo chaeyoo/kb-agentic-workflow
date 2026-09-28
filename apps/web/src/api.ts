@@ -44,10 +44,13 @@ const EVENT_TYPES = ["thinking", "message_delta", "tool_call", "tool_result", "a
 
 /**
  * 실행 이벤트 구독 (SSE). 서버는 지난 이벤트부터 다시 보내주므로, 언제 구독해도 전체 타임라인을 받는다.
- * done 을 받으면 연결을 닫는다 (닫지 않으면 EventSource 가 자동 재연결해서 처음부터 다시 받는다).
+ * - 연결될 때마다 서버가 먼저 "run" 을 보낸다 → onReset 으로 이전에 받은 이벤트를 비운다 (재연결 시 중복 방지)
+ * - 서버는 스트림을 닫기 전에 "end" 를 보낸다 → 연결을 닫는다 (안 닫으면 EventSource 가 자동 재연결한다)
  */
-export function subscribeRun(runId: string, onEvent: (e: RecordedEvent) => void): () => void {
+export function subscribeRun(runId: string, onEvent: (e: RecordedEvent) => void, onReset: () => void): () => void {
   const es = new EventSource(`/api/runs/${runId}/stream`);
+  es.addEventListener("run", () => onReset());
+  es.addEventListener("end", () => es.close());
   for (const type of EVENT_TYPES) {
     es.addEventListener(type, (msg) => {
       const e = JSON.parse((msg as MessageEvent<string>).data) as RecordedEvent;
@@ -55,7 +58,6 @@ export function subscribeRun(runId: string, onEvent: (e: RecordedEvent) => void)
       if (e.type === "done") es.close();
     });
   }
-  es.onerror = () => { if (es.readyState === EventSource.CLOSED) es.close(); };
   return () => es.close();
 }
 

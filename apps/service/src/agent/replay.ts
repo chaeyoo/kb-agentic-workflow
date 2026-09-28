@@ -40,6 +40,7 @@ export function turnsFromEvents(events: RecordedEvent[]): Turn[] {
   let cur: Turn | undefined;
   let lastToolResultT = 0;
   let afterTools = false;
+  let curTurnNo: number | undefined;
   for (const e of events) {
     const startNew = () => {
       cur = { deltas: [], toolCalls: [], startT: lastToolResultT, stopReason: "end_turn" };
@@ -50,7 +51,12 @@ export function turnsFromEvents(events: RecordedEvent[]): Turn[] {
       if (!cur || afterTools) startNew();
       cur!.deltas.push({ kind: e.type === "thinking" ? "thinking" : "text", text: e.text, t: e.t });
     } else if (e.type === "tool_call") {
-      if (!cur || afterTools) startNew();
+      // 루프는 병렬 호출을 call a → result a → call b → result b 순서로 기록한다.
+      // 같은 turn 번호의 호출은 한 턴으로 묶는다. (turn 이 없는 옛 기록은 호출마다 새 턴으로 본다)
+      const sameTurn = cur && e.turn !== undefined && e.turn === curTurnNo;
+      if (!cur || (afterTools && !sameTurn)) startNew();
+      curTurnNo = e.turn;
+      afterTools = false;
       cur!.toolCalls.push({ id: e.id, name: e.name, input: e.input, t: e.t });
       cur!.stopReason = "tool_use";
     } else if (e.type === "tool_result") {
@@ -96,8 +102,9 @@ export function claimFixture(input: string): Fixture {
   if (matches.length === 0) {
     throw new Error(`리플레이할 fixture 가 없습니다. 이 입력으로 녹화된 실행이 fixtures/runs 에 없습니다: "${input.slice(0, 40)}…"`);
   }
-  const n = used.get(input) ?? 0;
-  used.set(input, n + 1);
+  const key = input.trim();
+  const n = used.get(key) ?? 0;
+  used.set(key, n + 1);
   return matches[n % matches.length]!;
 }
 

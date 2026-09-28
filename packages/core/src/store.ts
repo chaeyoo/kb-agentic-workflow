@@ -66,7 +66,12 @@ export class FileStore {
 
   /** 시드 상태로 되돌린다 (발표 리허설용). */
   reset(): void {
+    // 실행/Q&A 번호는 이어서 쓴다. 번호가 다시 쓰이면 열려 있는 화면(#/qa/run-1)이
+    // 같은 주소라 새 실행을 구독하지 않고 reset 전 실행을 계속 보여준다.
+    const { run, qa } = this.data.counters;
     this.data = loadSeed();
+    if (run) this.data.counters.run = run;
+    if (qa) this.data.counters.qa = qa;
     this.save();
   }
 }

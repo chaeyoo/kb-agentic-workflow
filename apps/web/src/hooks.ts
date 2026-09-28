@@ -7,7 +7,7 @@ export function useRunEvents(runId: string | undefined) {
   useEffect(() => {
     setEvents([]);
     if (!runId) return;
-    return subscribeRun(runId, (e) => setEvents((prev) => [...prev, e]));
+    return subscribeRun(runId, (e) => setEvents((prev) => [...prev, e]), () => setEvents([]));
   }, [runId]);
   const done = events.find((e) => e.type === "done");
   return { events, done: done?.type === "done" ? done : undefined };

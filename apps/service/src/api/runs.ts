@@ -17,7 +17,8 @@ function pipeRun(stream: SSEStreamingApi, runner: AgentRunner, runId: string) {
     const unsubscribe = runner.subscribe(
       runId,
       (e: RecordedEvent) => { chain = chain.then(() => stream.writeSSE({ event: e.type, data: JSON.stringify(e) })); },
-      () => { chain.then(resolve); },
+      // 끝났음을 알리는 end 를 보내고 닫는다. 클라이언트는 이걸 받으면 재연결하지 않는다.
+      () => { chain = chain.then(() => stream.writeSSE({ event: "end", data: "{}" })); chain.then(resolve); },
     );
     stream.onAbort(() => { unsubscribe(); resolve(); });
   });
