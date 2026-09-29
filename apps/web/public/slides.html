@@ -284,6 +284,19 @@
   </aside>
 </section>
 
+<section class="slide" style="padding:36px 48px 32px">
+  <div class="kicker">데모 · 개발자 화면</div>
+  <h2 style="margin-bottom:14px">개발자의 Claude Code에서는 이렇게 보입니다</h2>
+  <div class="img-fit"><img src="claude-code-mcp.png" alt="Claude Code에서 kb-policy MCP로 정책을 검색해 섹션·버전 출처가 붙은 답을 받은 화면" /></div>
+  <p class="foot">read 토큰이라 조회 도구만 보이고, 답변에는 <code>membership.age@2</code> 같은 섹션·버전 출처가 붙습니다.</p>
+  <aside class="notes">
+    실제 배포된 원격 MCP 서버에 read 토큰으로 연결한 Claude Code 화면.
+    "만 14세 미만 검진 예약 정책 검색해줘" 한 마디에 search_policies 를 골라 호출하고,
+    세 문서를 모아 답하면서 membership.age@2 와 guardian-consent.minor-signup@1 의 모순까지 짚는다.
+    개발자는 정책 담당자를 기다리지 않고, 에이전트와 같은 서버·다른 권한으로 조회만 한다.
+  </aside>
+</section>
+
 <!-- 04 만들면서 알게 된 것 -->
 <section class="slide act">
   <div class="num">04</div>
