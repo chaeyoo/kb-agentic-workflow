@@ -14,7 +14,8 @@ export function PoliciesPage({ documentId, target }: { documentId?: string; targ
   const [pending, setPending] = useState<PolicyChangeProposal[]>([]);
   const [targetKey, targetVersion] = (target ?? "").split("@");
   const docId = documentId ?? docs[0]?.id;
-  const version = picked?.docId === docId ? picked.version : undefined;
+  // docId 가 아직 없으면(목록 로딩 전) picked 도 없어서 undefined === undefined 로 크래시하지 않게 옵셔널로 읽는다.
+  const version = picked?.docId === docId ? picked?.version : undefined;
   const setVersion = (v: number) => setPicked({ docId, version: v });
 
   useEffect(() => {

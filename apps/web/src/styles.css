@@ -33,8 +33,11 @@ h2 { font-size: 18px; margin: 8px 0; } h3 { font-size: 13px; color: var(--muted)
 .cite { background: #edf2ff; border-radius: 4px; padding: 0 4px; font-size: 12px; font-family: ui-monospace, monospace; }
 .ticket-link { font-weight: 600; }
 
-.topbar { display: flex; align-items: center; gap: 24px; padding: 10px 20px; background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
-.topbar nav { display: flex; gap: 4px; }
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 24px; padding: 10px 20px; background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 5; }
+.topbar nav { display: flex; flex-wrap: wrap; gap: 4px; }
+@media (max-width: 760px) {
+  .topbar { gap: 6px 12px; padding: 8px 12px; }
+}
 .topbar nav a { padding: 6px 12px; border-radius: 6px; color: var(--text); }
 .topbar nav a.active { background: #edf2ff; color: var(--accent); font-weight: 600; }
 .topbar .user { margin-left: auto; display: flex; gap: 8px; align-items: center; color: var(--muted); }
@@ -103,6 +106,9 @@ main { padding: 18px 20px; }
 .doc-list { display: flex; flex-direction: column; gap: 4px; }
 .doc-list a { padding: 8px 10px; border-radius: 8px; color: var(--text); }
 .doc-list a.active { background: #fff; border: 1px solid var(--line); font-weight: 600; }
+@media (max-width: 760px) {
+  .policies-layout { grid-template-columns: 1fr; }
+}
 .doc header { margin-bottom: 12px; }
 .doc h1 { font-size: 22px; margin: 0 0 6px; }
 .policy-section { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; }
