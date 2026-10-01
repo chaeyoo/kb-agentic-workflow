@@ -2,6 +2,7 @@
 import "@kb/core/env";
 import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import type { Server } from "node:http";
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
@@ -41,7 +42,12 @@ if (existsSync(webDist)) {
 }
 
 const port = Number(process.env.PORT || process.env.SERVICE_PORT || 8787);
-serve({ fetch: app.fetch, port }, () => {
+const server = serve({ fetch: app.fetch, port }, () => {
   console.log(`[service] http://localhost:${port}  (store: ${store.path}, llm: ${MODEL_LABEL})`);
   console.log(`[service] ANTHROPIC_API_KEY ${process.env.ANTHROPIC_API_KEY ? "설정됨" : "없음"}, ANTHROPIC_WORKSPACE_ID ${process.env.ANTHROPIC_WORKSPACE_ID || "없음"}`);
 });
+// Render 같은 프록시 뒤에서 간헐적 502 방지: Node 기본 keep-alive(5초)가 프록시보다 짧으면
+// 프록시가 이미 닫힌 연결을 재사용하다 502 를 낸다. 서버 쪽을 프록시보다 길게 잡는다.
+(server as Server).keepAliveTimeout = 120_000;
+(server as Server).headersTimeout = 121_000;
+
