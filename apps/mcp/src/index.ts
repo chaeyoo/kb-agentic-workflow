@@ -6,6 +6,7 @@
 // 요청마다 McpServer 를 새로 만든다 (stateless). 호출자의 권한에 맞는 도구만 등록하기 위해서다.
 // → read 토큰으로 붙으면 쓰기 도구는 목록에조차 나타나지 않는다.
 import "@kb/core/env";
+import type { Server } from "node:http";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
@@ -89,6 +90,11 @@ app.all("/mcp", async (c) => {
 });
 
 const port = Number(process.env.PORT || process.env.MCP_PORT || 8788);
-serve({ fetch: app.fetch, port }, () => {
+const server = serve({ fetch: app.fetch, port }, () => {
   console.log(`[mcp] http://localhost:${port}/mcp  (descriptions: ${descriptionVersion})`);
 });
+// Render 같은 프록시 뒤에서 간헐적 502 방지: Node 기본 keep-alive(5초)가 프록시보다 짧으면
+// 프록시가 이미 닫힌 연결을 재사용하다 502 를 낸다. 서버 쪽을 프록시보다 길게 잡는다.
+(server as Server).keepAliveTimeout = 120_000;
+(server as Server).headersTimeout = 121_000;
+
